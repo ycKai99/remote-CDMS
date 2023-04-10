@@ -10,10 +10,11 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import express, { Express } from 'express';
 import { AppService } from './app.service';
-import { SampleDto } from './sample.dto';
+import { SampleDto } from './interfaces/sample.dto';
 import * as multer from 'multer'
 import { diskStorage } from 'multer'
 import { extname } from 'path';
+import { dataStorageInterface } from './interfaces/data.storage';
 const upload = multer({ dest: 'uploads/' })
 
 @Controller()
@@ -81,5 +82,12 @@ export class AppController {
       file: file.buffer.toString(),
     };
   }
+  
+  @Post('data')
+  dataOperation(@Body() body) {
+    let postBody:dataStorageInterface = body;
+    return this.appService.dataOperation(body);
+  }
+  
 }
  
