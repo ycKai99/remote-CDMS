@@ -22,14 +22,14 @@ export interface messageNotificationInterface {
     ID: string;
     Code: string;
     Operation: string;
-    DataSource: string;
+    uuid: string;
 }
 
 // success or error message interface
 export interface responseMessageInterface {
     time: string;
     message: string;
-    header_messageId?: string;
+    uuid?: string;
 }
 
 export interface locationTagInterface {

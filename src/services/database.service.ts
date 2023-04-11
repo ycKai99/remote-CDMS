@@ -2,23 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { handleMessage } from './FileAction/handle_error_message';
 import { FPENTITYNAME, RESPONSE_MESSAGE } from '../interfaces/const_setting';
 const mongoose = require('mongoose');
-import { Subject } from 'rxjs';
 
 @Injectable()
 export class DbConnectionController {
 
     private dbConnection;
-
-    private dataSubject1 = new Subject<any>()
-    private dataSubject2 = new Subject<any>()
-    private dataSubject3 = new Subject<any>()
-    private dataSubject4 = new Subject<any>()
-    private dataSubject5 = new Subject<any>()
-    public finalData1$ = this.dataSubject1.asObservable();
-    public finalData2$ = this.dataSubject2.asObservable();
-    public finalData3$ = this.dataSubject3.asObservable();
-    public finalData4$ = this.dataSubject4.asObservable();
-    public finalData5$ = this.dataSubject5.asObservable();
 
     private fpTemplateSchema = new mongoose.Schema({
         fpid: String,
@@ -58,6 +46,11 @@ export class DbConnectionController {
         child: String,
         parent: String
     });
+
+    private fpImageScheme = new mongoose.Schema({
+        uuid: String,
+        image: String
+    })
 
     constructor(){}
 
@@ -99,35 +92,31 @@ export class DbConnectionController {
                 return mongoose.model(entityname, this.locationTagSchema);
             case FPENTITYNAME.LOCATION_REL:
                 return mongoose.model(entityname, this.locationRelationSchema);
+            case FPENTITYNAME.FP_IMAGE:
+                return mongoose.model(entityname, this.fpImageScheme);
         }
     }
 
     
 
     /**
-     * @param entityname string
-     * @param entityUUID optional, used when read image
+     * @param entityname type : string
+     * @param entityUUID type : string (optional, used when read single data)
      * @description read data from mongodb 
      */
-    readExec(entityname, entityUUID?) {
+    async readExec(entityname: string, entityUUID?: string) {
+        let findData = {};
+        if(entityUUID) {findData = {uuid: entityUUID}};
         let collection = this.returnModelType(entityname);
-        let data;
-        collection.find({}, (err, data) => {
-            if(err) {
-                handleMessage(RESPONSE_MESSAGE.DATABASE_FINDALL_ERROR, err)
-                data = err;
-            }
-            else {
-                // handleMessage(RESPONSE_MESSAGE.DATABASE_FINDALL_SUCCESS, "", data)
-                data = data
-                if(entityname === FPENTITYNAME.FP_TEMPLATE_MSG) {this.dataSubject1.next(data)}
-                if(entityname === FPENTITYNAME.NOTIF_MSG) {this.dataSubject2.next(data)}
-                if(entityname === FPENTITYNAME.RES_MSG) {this.dataSubject3.next(data)}
-                if(entityname === FPENTITYNAME.LOCATION_TAG) {this.dataSubject4.next(data)}
-                if(entityname === FPENTITYNAME.LOCATION_REL) {this.dataSubject5.next(data)}
-            }
-        })
-        return data
+        let data: string = "";
+        try {
+            data = JSON.stringify(await collection.find(findData));
+            handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_READ_DATA);
+        }catch(err) {
+            data = JSON.stringify(err);
+            handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_READ_DATA, err);
+        }
+        return data;
     }
 
     /**
@@ -135,16 +124,13 @@ export class DbConnectionController {
      * @param data data
      * @description add data into mongodb 
      */
-    writeExec(entityname, data) {
+    writeExec(entityname: string, data) {
         let mongoModel = this.returnModelType(entityname);
-        let result = mongoModel.create(data).then((res) => {
-            handleMessage(RESPONSE_MESSAGE.DATABASE_SAVE_DATA)
-            return true;
+        mongoModel.create(data).then((res) => {
+            handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_SAVE_DATA)
         }).catch((err) => {
             handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_SAVE_DATA, err)
-            return false;
         })
-        return result;
     }
 
     /**
@@ -152,8 +138,22 @@ export class DbConnectionController {
      * @param data data
      * @description update data to mongodb 
      */
-    updateExec(entityname, data) {
-
+    updateExec(entitynames: string, data) {
+        // const {uuid,entityname, ...excludeData} = data
+        // console.log('excludedata is ',excludeData)
+        // console.log('data is ',data)
+        let mongoModel = this.returnModelType(entitynames);
+        mongoModel.updateOne({uuid: data.uuid}, data).then((res) => {
+            console.log('res is ',res)
+            if(res.modifiedCount === 0) {
+                handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_UPDATE_DATA, {response: {data: "modifiedCount is 0."}})
+            }
+            else {
+                handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_UPDATE_DATA)
+            }
+        }).catch((err) => {
+            handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_UPDATE_DATA, err)
+        })
     }
 
     /**
@@ -161,7 +161,17 @@ export class DbConnectionController {
      * @param data data
      * @description delete data from mongodb 
      */
-    deleteExec(entityname, data) {
-
-    }
+    deleteExec(entityname: string, entityUUID: string) {
+        let mongoModel = this.returnModelType(entityname);
+        mongoModel.deleteOne({uuid: entityUUID}).then((res) => {
+           if(res.deletedCount === 0) {
+            handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_DELETE_DATA, {response: {data: "deletedCount is 0."}})
+           }
+           else{
+            handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_DELETE_DATA)
+           }
+        }).catch((err) => {
+            handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_DELETE_DATA, err)
+        })
+    }//fingerprintTemplateData, registeredFingerprintMessage, handleResponseMessage, locationtag, locationrelation, fingerprintImage
 }

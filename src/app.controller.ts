@@ -85,8 +85,8 @@ export class AppController {
   
   @Post('data')
   dataOperation(@Body() body) {
-    let postBody:dataStorageInterface = body;
-    return this.appService.dataOperation(body);
+    let postBody: dataStorageInterface = body;
+    return this.appService.dataOperation(postBody);
   }
   
 }

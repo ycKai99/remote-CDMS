@@ -10,8 +10,7 @@ dotenv.config();
 @Injectable()
 export class StorageController{
 
-    private storageType: DB; // storageType : FILE or MONGO
-    private entityname_storageType :{[key:string]:DB}={}  
+    private entityname_storageType :{[key: string]: DB} = {};
      
     private dbConnectionController: DbConnectionController = new DbConnectionController();
 
@@ -27,27 +26,27 @@ export class StorageController{
     // initial setup the storage type
     public init() {
         //storage="fingerprintTemplateData=mongo,handleResponseMessage=mongo,locationrelation=mongo,locationtag=mongo,registeredFingerprintMessage=mongo"
-        let storage:string = process.env.storage;
-        let storageArray:string[] = storage.split(",")
+        let storage: string = process.env.storage;
+        let storageArray: string[] = storage.split(",");
         storageArray.forEach(
             //fingerprintTemplateData=mongo
-            (keyvalue:string)=>{
-                let keyvalueArray:string[]
-                keyvalueArray=keyvalue.split("="); 
-                let key:string = keyvalueArray[0];
-                let value:string = keyvalueArray[1];
-                let DBvalue:DB
+            (keyvalue: string) => {
+                let keyvalueArray: string[];
+                keyvalueArray = keyvalue.split("="); 
+                let key: string = keyvalueArray[0];
+                let value: string = keyvalueArray[1];
+                let DBvalue: DB;
 
-                if(value.toLocaleLowerCase()=='file')
+                if(value.toLocaleLowerCase() === 'file')
                 {
-                    DBvalue = DB.FILE
+                    DBvalue = DB.FILE;
                 }
-                if(value.toLocaleLowerCase()=='mongo')
+                if(value.toLocaleLowerCase() === 'mongo')
                 {
-                    DBvalue = DB.MONGO
+                    DBvalue = DB.MONGO;
                 } 
 
-                this.setStorageType(key,DBvalue);
+                this.setStorageType(key, DBvalue);
             }
         )  
 
@@ -56,12 +55,12 @@ export class StorageController{
     }
 
     // get storage type
-    public getStorageType(entityname:string): DB{
+    public getStorageType(entityname: string): DB{
         return this.entityname_storageType[entityname];
     }
 
     // set storage type
-    public setStorageType(entityname:string,data: DB) {
+    public setStorageType(entityname: string, data: DB) {
         this.entityname_storageType[entityname] = data;
         //this.storageType = data;
     }
@@ -71,7 +70,7 @@ export class StorageController{
      * @param entityUUID optional, used when read image
      * @description Check storage type, and pass data to readExec(entityname, entityUUID)
      */
-    public readData(entityname, entityUUID?) {
+    public readData(entityname: string, entityUUID?: string) {
         if (this.getStorageType(entityname) === DB.FILE) {
             return readExec(entityname, entityUUID);
         }
@@ -85,17 +84,17 @@ export class StorageController{
      * @param data data
      * @description Check storage type, and pass data to writeExec(entityname, data)
      */
-    public writeData(entityname:string, entityUUID:string, data:string) {
+    public writeData(entityname: string, entityUUID: string, data: string) {
         
         // auto=append UUID
         let JSONdata = JSON.parse(data);
         JSONdata["uuid"] = entityUUID;
         
         if (this.getStorageType(entityname) === DB.FILE) {
-            return writeExec(entityname, JSONdata);
+            writeExec(entityname, JSONdata);
         }
         if (this.getStorageType(entityname) === DB.MONGO) {
-            return this.dbConnectionController.writeExec(entityname, JSONdata);
+            this.dbConnectionController.writeExec(entityname, JSONdata);
         }
     }
 
@@ -104,13 +103,17 @@ export class StorageController{
      * @param data data
      * @description Check storage type, and pass data to updateExec(entityname, data)
      */
-    public updateData(entityname,entityUUID:string,data:string) {
+    public updateData(entityname: string, entityUUID:string, data: string) {
+
+        let JSONdata = JSON.parse(data);
+        JSONdata["uuid"] = entityUUID;
+
         if (this.getStorageType(entityname) === DB.FILE) {
         //   return updateExec(entityname, data);
             console.log("Not yet implemented file storage.");
         }
         if (this.getStorageType(entityname) === DB.MONGO) {
-        //   return this.dbConnectionController.updateExec(entityname, data);
+          return this.dbConnectionController.updateExec(entityname, JSONdata);
         }
     }
 
@@ -119,13 +122,16 @@ export class StorageController{
      * @param data data
      * @description Check storage type, and pass data to deleteExec(entityname, data)
      */
-    public deleteData(entityname,entityUUID:string) {
+    public deleteData(entityname: string, entityUUID: string) {
+
         if (this.getStorageType(entityname) === DB.FILE) {
         //   return deleteExec(entityname, data);
             console.log("Not yet implemented file storage.");
         }
         if (this.getStorageType(entityname) === DB.MONGO) {
-        //   return this.dbConnectionController.deleteExec(entityname, data);
+            console.log('entityname : ',entityname)
+            console.log('entityUUID : ',entityUUID)
+          return this.dbConnectionController.deleteExec(entityname, entityUUID);
         }
     }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { dataStorageInterface } from './interfaces/data.storage';
 import { StorageController } from './services/storage.service';
+import { FPENTITYNAME } from './interfaces/const_setting';
 
 @Injectable()
 export class AppService {
@@ -11,30 +12,29 @@ export class AppService {
     return { hello: 'world' };
   }
 
-  dataOperation(data:dataStorageInterface){
+  dataOperation(data: dataStorageInterface){
 
-    let returnData:any
+    let returnData: any;
 
-    if(data.operation=="read")
+    if(data.operation === "read")
     { 
-      returnData = this.storageController.readData(data.entityname,data.uuid)
+      returnData = this.storageController.readData(data.entityname, data.uuid)
     }
 
-    if(data.operation=="write")
+    if(data.operation === "write")
     {
-      returnData = this.storageController.writeData(data.entityname,data.uuid,data.data)
+      returnData = this.storageController.writeData(data.entityname, data.uuid, data.data)
     }
 
-    if(data.operation=="update")
+    if(data.operation === "update")
     {
-      returnData = this.storageController.updateData(data.entityname,data.uuid,data.data)
+      returnData = this.storageController.updateData(data.entityname, data.uuid, data.data)
     }
 
-    if(data.operation=="delete")
+    if(data.operation === "delete")
     {
-      returnData = this.storageController.deleteData(data.entityname,data.uuid)
+      returnData = this.storageController.deleteData(data.entityname, data.uuid)
     }
-
     return returnData;
   }
 }

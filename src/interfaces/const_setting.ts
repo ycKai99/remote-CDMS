@@ -56,10 +56,14 @@ export const enum RESPONSE_MESSAGE {
     DATABASE_CONNECT_ERROR = "Failed to connect database",
     DATABASE_DISCONNECTED = "Disconnect to database",
     DATABASE_RECONNECTED = "Reconnect to database",
-    DATABASE_FINDALL_ERROR = "Failed to find database",
-    DATABASE_FINDALL_SUCCESS = "Success to find database",
-    DATABASE_SAVE_DATA = "Success to save data",
+    DATABASE_FAILED_READ_DATA = "Failed to read data",
+    DATABASE_SUCCESS_READ_DATA = "Success to read data",
+    DATABASE_SUCCESS_SAVE_DATA = "Success to save data",
     DATABASE_FAILED_SAVE_DATA = "Failed to save data",
+    DATABASE_FAILED_DELETE_DATA = "Failed to delete data",
+    DATABASE_SUCCESS_DELETE_DATA = "Success to delete data",
+    DATABASE_FAILED_UPDATE_DATA = "Failed to update data",
+    DATABASE_SUCCESS_UPDATE_DATA = "Success to update data",
     AXIOS_SUCCESS_GET = "Success get method",
     AXIOS_FAILED_GET = "Failed to get method",
     AXIOS_SUCCESS_POST = "Success post method",
@@ -109,5 +113,6 @@ export enum FPENTITYNAME {
     NOTIF_MSG = "registeredFingerprintMessage",
     RES_MSG = "handleResponseMessage",
     LOCATION_TAG = "locationtag",
-    LOCATION_REL = "locationrelation"
+    LOCATION_REL = "locationrelation",
+    FP_IMAGE = "fingerprintImage"
 }
