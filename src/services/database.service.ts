@@ -144,7 +144,6 @@ export class DbConnectionController {
         // console.log('data is ',data)
         let mongoModel = this.returnModelType(entitynames);
         mongoModel.updateOne({uuid: data.uuid}, data).then((res) => {
-            console.log('res is ',res)
             if(res.modifiedCount === 0) {
                 handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_UPDATE_DATA, {response: {data: "modifiedCount is 0."}})
             }
