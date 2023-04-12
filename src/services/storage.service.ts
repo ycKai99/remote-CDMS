@@ -4,15 +4,16 @@ import { writeExec } from './FileAction/write_data';
 import { DB } from '../interfaces/const_setting'; 
 import { DbConnectionController } from './database.service';
 import * as dotenv from 'dotenv'
+import { SynchronisationService } from './synchronisation.service';
 
 dotenv.config();
 
 @Injectable()
 export class StorageController{
 
-    private entityname_storageType :{[key: string]: DB} = {};
-     
+    private entityName_storageType :{[key: string]: DB} = {};
     private dbConnectionController: DbConnectionController = new DbConnectionController();
+    private synchronisationService:SynchronisationService = new SynchronisationService();
 
     constructor(){ 
         this.init()
@@ -52,86 +53,89 @@ export class StorageController{
 
         // Connect to mongo DB.
         this.dbConnectionController.init()
+
+        // Synchronisation service
+        this.synchronisationService.init()
     }
 
     // get storage type
-    public getStorageType(entityname: string): DB{
-        return this.entityname_storageType[entityname];
+    public getStorageType(entityName: string): DB{
+        return this.entityName_storageType[entityName];
     }
 
     // set storage type
-    public setStorageType(entityname: string, data: DB) {
-        this.entityname_storageType[entityname] = data;
+    public setStorageType(entityName: string, data: DB) {
+        this.entityName_storageType[entityName] = data;
         //this.storageType = data;
     }
 
     /**
-     * @param entityname string
+     * @param entityName string
      * @param entityUUID optional, used when read image
-     * @description Check storage type, and pass data to readExec(entityname, entityUUID)
+     * @description Check storage type, and pass data to readExec(entityName, entityUUID)
      */
-    public readData(entityname: string, entityUUID?: string) {
-        if (this.getStorageType(entityname) === DB.FILE) {
-            return readExec(entityname, entityUUID);
+    public readData(entityName: string, entityUUID?: string) {
+        if (this.getStorageType(entityName) === DB.FILE) {
+            return readExec(entityName, entityUUID);
         }
-        if (this.getStorageType(entityname) === DB.MONGO) {
-            return this.dbConnectionController.readExec(entityname, entityUUID);
+        if (this.getStorageType(entityName) === DB.MONGO) {
+            return this.dbConnectionController.readExec(entityName, entityUUID);
         }
     }
 
     /**
-     * @param entityname string
+     * @param entityName string
      * @param data data
-     * @description Check storage type, and pass data to writeExec(entityname, data)
+     * @description Check storage type, and pass data to writeExec(entityName, data)
      */
-    public writeData(entityname: string, entityUUID: string, data: string) {
+    public writeData(entityName: string, entityUUID: string, data: string) {
         
         // auto=append UUID
         let JSONdata = JSON.parse(data);
         JSONdata["uuid"] = entityUUID;
         
-        if (this.getStorageType(entityname) === DB.FILE) {
-            writeExec(entityname, JSONdata);
+        if (this.getStorageType(entityName) === DB.FILE) {
+            writeExec(entityName, JSONdata);
         }
-        if (this.getStorageType(entityname) === DB.MONGO) {
-            this.dbConnectionController.writeExec(entityname, JSONdata);
+        if (this.getStorageType(entityName) === DB.MONGO) {
+            this.dbConnectionController.writeExec(entityName, JSONdata);
         }
     }
 
     /**
-     * @param entityname string
+     * @param entityName string
      * @param data data
-     * @description Check storage type, and pass data to updateExec(entityname, data)
+     * @description Check storage type, and pass data to updateExec(entityName, data)
      */
-    public updateData(entityname: string, entityUUID:string, data: string) {
+    public updateData(entityName: string, entityUUID:string, data: string) {
 
         let JSONdata = JSON.parse(data);
         JSONdata["uuid"] = entityUUID;
 
-        if (this.getStorageType(entityname) === DB.FILE) {
-        //   return updateExec(entityname, data);
+        if (this.getStorageType(entityName) === DB.FILE) {
+        //   return updateExec(entityName, data);
             console.log("Not yet implemented file storage.");
         }
-        if (this.getStorageType(entityname) === DB.MONGO) {
-          return this.dbConnectionController.updateExec(entityname, JSONdata);
+        if (this.getStorageType(entityName) === DB.MONGO) {
+          return this.dbConnectionController.updateExec(entityName, JSONdata);
         }
     }
 
     /**
-     * @param entityname string
+     * @param entityName string
      * @param data data
-     * @description Check storage type, and pass data to deleteExec(entityname, data)
+     * @description Check storage type, and pass data to deleteExec(entityName, data)
      */
-    public deleteData(entityname: string, entityUUID: string) {
+    public deleteData(entityName: string, entityUUID: string) {
 
-        if (this.getStorageType(entityname) === DB.FILE) {
-        //   return deleteExec(entityname, data);
+        if (this.getStorageType(entityName) === DB.FILE) {
+        //   return deleteExec(entityName, data);
             console.log("Not yet implemented file storage.");
         }
-        if (this.getStorageType(entityname) === DB.MONGO) {
-            console.log('entityname : ',entityname)
+        if (this.getStorageType(entityName) === DB.MONGO) {
+            console.log('entityName : ',entityName)
             console.log('entityUUID : ',entityUUID)
-          return this.dbConnectionController.deleteExec(entityname, entityUUID);
+          return this.dbConnectionController.deleteExec(entityName, entityUUID);
         }
     }
 }

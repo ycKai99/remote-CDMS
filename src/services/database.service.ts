@@ -78,36 +78,36 @@ export class DbConnectionController {
     }
 
     /**
-     * @description return model based on entityname 
+     * @description return model based on entityName 
      */
-    returnModelType(entityname) {
-        switch(entityname) {
+    returnModelType(entityName) {
+        switch(entityName) {
             case FPENTITYNAME.FP_TEMPLATE_MSG:
-                return mongoose.model(entityname, this.fpTemplateSchema);
+                return mongoose.model(entityName, this.fpTemplateSchema);
             case FPENTITYNAME.NOTIF_MSG:
-                return mongoose.model(entityname, this.notificationSchema);
+                return mongoose.model(entityName, this.notificationSchema);
             case FPENTITYNAME.RES_MSG:
-                return mongoose.model(entityname, this.responseSchema);
+                return mongoose.model(entityName, this.responseSchema);
             case FPENTITYNAME.LOCATION_TAG:
-                return mongoose.model(entityname, this.locationTagSchema);
+                return mongoose.model(entityName, this.locationTagSchema);
             case FPENTITYNAME.LOCATION_REL:
-                return mongoose.model(entityname, this.locationRelationSchema);
+                return mongoose.model(entityName, this.locationRelationSchema);
             case FPENTITYNAME.FP_IMAGE:
-                return mongoose.model(entityname, this.fpImageScheme);
+                return mongoose.model(entityName, this.fpImageScheme);
         }
     }
 
     
 
     /**
-     * @param entityname type : string
+     * @param entityName type : string
      * @param entityUUID type : string (optional, used when read single data)
      * @description read data from mongodb 
      */
-    async readExec(entityname: string, entityUUID?: string) {
+    async readExec(entityName: string, entityUUID?: string) {
         let findData = {};
         if(entityUUID) {findData = {uuid: entityUUID}};
-        let collection = this.returnModelType(entityname);
+        let collection = this.returnModelType(entityName);
         let data: string = "";
         try {
             data = JSON.stringify(await collection.find(findData));
@@ -120,12 +120,12 @@ export class DbConnectionController {
     }
 
     /**
-     * @param entityname string
+     * @param entityName string
      * @param data data
      * @description add data into mongodb 
      */
-    writeExec(entityname: string, data) {
-        let mongoModel = this.returnModelType(entityname);
+    writeExec(entityName: string, data) {
+        let mongoModel = this.returnModelType(entityName);
         mongoModel.create(data).then((res) => {
             handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_SAVE_DATA)
         }).catch((err) => {
@@ -134,15 +134,15 @@ export class DbConnectionController {
     }
 
     /**
-     * @param entityname string
+     * @param entityName string
      * @param data data
      * @description update data to mongodb 
      */
-    updateExec(entitynames: string, data) {
-        // const {uuid,entityname, ...excludeData} = data
+    updateExec(entityNames: string, data) {
+        // const {uuid,entityName, ...excludeData} = data
         // console.log('excludedata is ',excludeData)
         // console.log('data is ',data)
-        let mongoModel = this.returnModelType(entitynames);
+        let mongoModel = this.returnModelType(entityNames);
         mongoModel.updateOne({uuid: data.uuid}, data).then((res) => {
             if(res.modifiedCount === 0) {
                 handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_UPDATE_DATA, {response: {data: "modifiedCount is 0."}})
@@ -156,12 +156,12 @@ export class DbConnectionController {
     }
 
     /**
-     * @param entityname string
+     * @param entityName string
      * @param data data
      * @description delete data from mongodb 
      */
-    deleteExec(entityname: string, entityUUID: string) {
-        let mongoModel = this.returnModelType(entityname);
+    deleteExec(entityName: string, entityUUID: string) {
+        let mongoModel = this.returnModelType(entityName);
         mongoModel.deleteOne({uuid: entityUUID}).then((res) => {
            if(res.deletedCount === 0) {
             handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_DELETE_DATA, {response: {data: "deletedCount is 0."}})

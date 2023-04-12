@@ -18,22 +18,22 @@ export class AppService {
 
     if(data.operation === "read")
     { 
-      returnData = this.storageController.readData(data.entityname, data.uuid)
+      returnData = this.storageController.readData(data.entityName, data.uuid)
     }
 
     if(data.operation === "write")
     {
-      returnData = this.storageController.writeData(data.entityname, data.uuid, data.data)
+      returnData = this.storageController.writeData(data.entityName, data.uuid, data.data)
     }
 
     if(data.operation === "update")
     {
-      returnData = this.storageController.updateData(data.entityname, data.uuid, data.data)
+      returnData = this.storageController.updateData(data.entityName, data.uuid, data.data)
     }
 
     if(data.operation === "delete")
     {
-      returnData = this.storageController.deleteData(data.entityname, data.uuid)
+      returnData = this.storageController.deleteData(data.entityName, data.uuid)
     }
     return returnData;
   }
