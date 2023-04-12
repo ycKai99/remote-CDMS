@@ -1,6 +1,6 @@
 import fs = require('graceful-fs')
 import { DIRECTORY, FILE_EXTENSION, RESPONSE_MESSAGE } from '../../interfaces/const_setting';
-import { handleMessage } from './handle_error_message';
+import { handleMessage } from './handlestatusmessage';
 
 export function writeExec(filePath, data) {
     let readFileName = "./"+DIRECTORY+"/"+filePath+"."+FILE_EXTENSION.JSON;

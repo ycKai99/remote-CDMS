@@ -111,7 +111,7 @@ export enum PROCESS_STATUS {
 export enum FPENTITYNAME {
     FP_TEMPLATE_MSG = "fingerprintTemplateData",
     NOTIF_MSG = "registeredFingerprintMessage",
-    RES_MSG = "handleResponseMessage",
+    RES_MSG = "handleStatusMessage",
     LOCATION_TAG = "locationtag",
     LOCATION_REL = "locationrelation",
     FP_IMAGE = "fingerprintImage"

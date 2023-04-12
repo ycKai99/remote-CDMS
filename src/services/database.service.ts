@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'; 
-import { handleMessage } from './FileAction/handle_error_message';
+import { handleMessage } from './utility/handlestatusmessage';
 import { FPENTITYNAME, RESPONSE_MESSAGE } from '../interfaces/const_setting';
 const mongoose = require('mongoose');
 
@@ -28,13 +28,13 @@ export class DbConnectionController {
         ID: String,
         Code: String,
         Operation: String,
-        DataSource: String
+        uuid: String
     });
     
     private responseSchema = new mongoose.Schema({
         time: String,
         message: String,
-        header_messageId: String
+        uuid: String
     });
 
     private locationTagSchema = new mongoose.Schema({

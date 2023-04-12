@@ -1,10 +1,10 @@
 import { FPENTITYNAME, URL_SYNC_REMOTE_DATA } from "../../interfaces/const_setting";
-import { writeExec } from "./write_data";
+import { writeExec } from "./writedata";
 import fs = require('graceful-fs')
 import { fingerprintDataInterface } from "../../interfaces/file_message_type.interface";
-import { postAxiosMethod } from "../ConnectionAction/post_method";
+import { postAxiosMethod } from "../axios/post_method";
 
-export function syncData(res, fpTemplateData: fingerprintDataInterface[], uuidArray) {
+export function syncData(res, fpTemplateData: string[], uuidArray) {
     if(res.syncData.length !== 0) {
         console.log('syncData length is ',res.syncData.length)
         res.syncData.forEach(element => {

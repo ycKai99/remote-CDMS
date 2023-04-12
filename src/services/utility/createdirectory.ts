@@ -1,6 +1,6 @@
 import fs = require('graceful-fs')
 import { RESPONSE_MESSAGE } from '../../interfaces/const_setting';
-import { handleMessage } from './handle_error_message';
+import { handleMessage } from './handlestatusmessage';
 
 export function makeDirectory(dir: string) {
     if (fs.existsSync(dir)) { // if folder is exist then return false

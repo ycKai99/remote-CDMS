@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common'; 
-import { readExec } from './FileAction/read_data';
-import { writeExec } from './FileAction/write_data';
-import { DB } from '../interfaces/const_setting'; 
+import { readExec } from './utility/readdata';
+import { writeExec } from './utility/writedata';
+import { DB, RESPONSE_MESSAGE } from '../interfaces/const_setting'; 
 import { DbConnectionController } from './database.service';
 import * as dotenv from 'dotenv'
 import { SynchronisationService } from './synchronisation.service';
+import { handleMessage } from './utility/handlestatusmessage';
 
 dotenv.config();
 
@@ -13,19 +14,14 @@ export class StorageController{
 
     private entityName_storageType :{[key: string]: DB} = {};
     private dbConnectionController: DbConnectionController = new DbConnectionController();
-    private synchronisationService:SynchronisationService = new SynchronisationService();
+    private synchronisationService: SynchronisationService = new SynchronisationService();
 
     constructor(){ 
-        this.init()
-    }
-
-    // set the dbConnectionController from the main controller
-    public setDbConnectionController(controller: DbConnectionController) {
-        this.dbConnectionController = controller;
+        this.init();
     }
 
     // initial setup the storage type
-    public init() {
+    public async init() {
         //storage="fingerprintTemplateData=mongo,handleResponseMessage=mongo,locationrelation=mongo,locationtag=mongo,registeredFingerprintMessage=mongo"
         let storage: string = process.env.storage;
         let storageArray: string[] = storage.split(",");
@@ -52,10 +48,15 @@ export class StorageController{
         )  
 
         // Connect to mongo DB.
-        this.dbConnectionController.init()
+        await this.dbConnectionController.init()
 
         // Synchronisation service
-        this.synchronisationService.init()
+        await this.synchronisationService.checkConnectionStatus().then(async (res) =>{    
+            await this.synchronisationService.setConnectionStatus(res);
+            await this.synchronisationService.init();
+          }).catch((err) => {
+            handleMessage(RESPONSE_MESSAGE.FAILED_REFRESH_CONNECTION, err)
+          });
     }
 
     // get storage type

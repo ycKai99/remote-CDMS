@@ -1,39 +1,48 @@
-import { postAxiosMethod } from "./ConnectionAction/post_method";
-import { filterLocalUUIDArray } from "./FileAction/get_local_fpid";
-import { syncData } from "./FileAction/sync_data";
-import { STAT } from "../interfaces/const_setting";
+import { postAxiosMethod } from "./axios/post_method";
+import { filterLocalUUIDArray } from "./utility/filterlocaluuidarray";
+import { syncData } from "./utility/syncdata";
+import { RESPONSE_MESSAGE, STAT } from "../interfaces/const_setting";
 import * as dotenv from 'dotenv'
 import { SynchronisationData } from "../interfaces/data.synchronisation";
+import { handleMessage } from "./utility/handlestatusmessage";
+import { refrechConnection } from "./utility/checkconnectionstatus";
+import { DbConnectionController } from "./database.service";
 
 dotenv.config();
 
 export class SynchronisationService {
+
+    private dbConnectionController: DbConnectionController = new DbConnectionController();
 	private VerifiedUUIDArray: string[] = []; // Verified UUID (Synch with server)
     private connectionStatus: STAT = STAT.OFFLINE;
     private remoteToSynch: string = process.env.REMOTE_SERVER; // server to synch
-    private thisLocalDate: any[]; // local data to synch
-    private entityNameArray: string[]; // local data to synch
+    private thisLocalData: any[]; // local data to synch
+    private entityNameArray: string[] = []; // local data to synch
 
     public init(){
-
-        //this.entityNameArray = 
-        
+        let tempEntityName = process.env.storage
+        let tempEntityNameArray = tempEntityName.split(",")
+        tempEntityNameArray.forEach((keyvalue: string) => {
+            let keyvalueArray: string[]
+            keyvalueArray = keyvalue.split("=")
+            this.entityNameArray.push(keyvalueArray[0])
+        })
+        let excludeData = ["fingerprintImage", "handleStatusMessage"]
+        this.entityNameArray = this.entityNameArray.filter((x) => !excludeData.includes(x))
         // Add interval (5 min)
-        setInterval(()=>{
-            // for each entity name repeat
-            this.updateLocalStorage();
-        },5*60*1000);
+        // setInterval(() => {
+        //     this.updateLocalStorage(); // for each entity name repeat
+        // },5*60*1000);
     }
 
-    public updateLocalStorage() { // sync local storage to remote server
+    public async updateLocalStorage() { // sync local storage to remote server
         if(this.getConnectionStatus() == STAT.ONLINE) {
-            // for each entity name repeat
-            this.entityNameArray.forEach((entityName)=>{
-                this.getRemoteStorage(entityName).then((res) => { // Get all missing FP and add to local storage
-                    syncData(res, this.thisLocalDate, this.VerifiedUUIDArray);
-                    //handleMessage(RESPONSE_MESSAGE.SUCCESS_SYNCDATA);
+            this.entityNameArray.forEach(async (entityName) => { // for each entity name repeat
+                await this.getRemoteStorage(entityName).then((res) => { // Get all missing FP and add to local storage
+                    syncData(res, this.thisLocalData, this.VerifiedUUIDArray);
+                    handleMessage(RESPONSE_MESSAGE.SUCCESS_SYNCDATA);
                 }).catch((err) => {
-                    //handleMessage(RESPONSE_MESSAGE.FAILED_SYNCDATA, err);
+                    handleMessage(RESPONSE_MESSAGE.FAILED_SYNCDATA, err);
                 });
             })
         }
@@ -42,22 +51,28 @@ export class SynchronisationService {
     public getConnectionStatus(): STAT { // return connection status
         return this.connectionStatus;
      }
-   public setConnectionStatus(data: STAT) { // set connection status
-     this.connectionStatus = data;
-   }
- 
+    public setConnectionStatus(data: STAT) { // set connection status
+        this.connectionStatus = data;
+    }
+    // used to check current connection status is "Online" or "Offline"
+	public async checkConnectionStatus(): Promise<STAT> {
+        return await refrechConnection();
+    }
   	
-	public getRemoteStorage(entityName:string) { // get remote storage sync data
-		let localVerifiedFPIds = this.getAllVerifiedLocalFPIds(entityName); // Loop and sent all local FPIds
-        let sentData:SynchronisationData = {
-            entityName:entityName,
-            data:localVerifiedFPIds
+	public async getRemoteStorage(entityName:string) { // get remote storage sync data
+		let localVerifiedFPIds = await this.getAllVerifiedLocalUUID(entityName); // Loop and sent all local FPIds
+        let sentData: SynchronisationData = {
+            entityName: entityName,
+            data: localVerifiedFPIds
         }
-        return postAxiosMethod(this.remoteToSynch, localVerifiedFPIds); // Post all localFPIds to server and get newFPIds
+        return await postAxiosMethod(this.remoteToSynch+"getNewFPId", sentData); // Post all localFPIds to server and get newFPIds
 	}
 	 
-	public getAllVerifiedLocalFPIds(entityName:string): string[] {  // get local uuid
-        this.VerifiedUUIDArray = filterLocalUUIDArray(this.thisLocalDate) // Loop and get all localVerifiedFPIds
-        return this.VerifiedUUIDArray;
-        }
+	public async getAllVerifiedLocalUUID(entityName: string, entityUUID?: string): Promise<string[]> {
+        this.thisLocalData = JSON.parse(await this.dbConnectionController.readExec(entityName, entityUUID))  // get local uuid
+        console.log('this.thisLocalData : ',this.thisLocalData)
+        return this.thisLocalData;
+        // this.VerifiedUUIDArray = filterLocalUUIDArray(this.thisLocalData); // Loop and get all localVerifiedFPIds
+        // return this.VerifiedUUIDArray;
+    }
 }

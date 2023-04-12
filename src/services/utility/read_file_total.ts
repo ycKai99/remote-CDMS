@@ -1,5 +1,5 @@
 import fs = require('graceful-fs')
-import { makeDirectory } from './create_directory'
+import { makeDirectory } from './createdirectory'
 
 export function readFileTotal(folder: string) {
     let num = 0;

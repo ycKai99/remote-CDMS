@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { dataStorageInterface } from './interfaces/data.storage';
 import { StorageController } from './services/storage.service';
-import { FPENTITYNAME } from './interfaces/const_setting';
 
 @Injectable()
 export class AppService {
