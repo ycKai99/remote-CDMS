@@ -71,7 +71,6 @@ export const enum RESPONSE_MESSAGE {
 }
 
 export const REMOTE_SERVER: string = process.env.REMOTE_SERVER;
-export const CHECK_SERVER: string = REMOTE_SERVER+"checkserverlive";
 export const URL_GET_FP_TEMPLATE: string = REMOTE_SERVER+"fptemplate";
 export const URL_REGISTER_FP: string = REMOTE_SERVER+"registerfp";
 export const URL_GET_NEW_FPID: string = REMOTE_SERVER+"getNewFPId";
