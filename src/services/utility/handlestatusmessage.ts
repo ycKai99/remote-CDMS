@@ -1,6 +1,6 @@
 
-import { FPENTITYNAME, RESPONSE_MESSAGE } from '../../interfaces/const_setting';
-import { responseMessageInterface } from '../../interfaces/file_message_type.interface';
+import { FPENTITYNAME, RESPONSE_MESSAGE } from '../../interfaces/constsetting';
+import { responseMessageInterface } from '../../interfaces/message.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { handleResponseMessage } from './generatemessage';
 import { writeExec } from './writedata';
@@ -11,7 +11,7 @@ export function handleMessage(message: RESPONSE_MESSAGE, err?, res?, uuid?) {
 
     if(uuid) localUUID = uuid;
     console.log('MESSAGE : ',message);
-    if(err) console.log('ERROR IS : ', err.response.data);
+    if(err) console.log('ERROR IS : ');
     if(res) console.log('RESPONSE IS : ', res);
 
     // let responseMessage: responseMessageInterface = handleResponseMessage(message, localUUID);

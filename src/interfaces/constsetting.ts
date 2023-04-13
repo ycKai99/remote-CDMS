@@ -113,6 +113,5 @@ export enum FPENTITYNAME {
     NOTIF_MSG = "registeredFingerprintMessage",
     RES_MSG = "handleStatusMessage",
     LOCATION_TAG = "locationtag",
-    LOCATION_REL = "locationrelation",
-    FP_IMAGE = "fingerprintImage"
+    LOCATION_REL = "locationrelation"
 }

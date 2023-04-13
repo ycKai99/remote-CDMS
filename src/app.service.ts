@@ -7,6 +7,11 @@ export class AppService {
  
   storageController = new StorageController();
 
+  constructor() {
+    console.log('app running...')
+    this.storageController.init();
+  }
+
   getHello() {
     return { hello: 'world' };
   }

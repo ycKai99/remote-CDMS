@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'; 
 import { readExec } from './utility/readdata';
 import { writeExec } from './utility/writedata';
-import { DB, RESPONSE_MESSAGE } from '../interfaces/const_setting'; 
+import { DB, RESPONSE_MESSAGE } from '../interfaces/constsetting'; 
 import { DbConnectionController } from './database.service';
 import * as dotenv from 'dotenv'
 import { SynchronisationService } from './synchronisation.service';
@@ -16,8 +16,9 @@ export class StorageController{
     private dbConnectionController: DbConnectionController = new DbConnectionController();
     private synchronisationService: SynchronisationService = new SynchronisationService();
 
-    constructor(){ 
-        this.init();
+    constructor(){
+        console.log('storage running...')
+        // this.init();
     }
 
     // initial setup the storage type
@@ -48,15 +49,10 @@ export class StorageController{
         )  
 
         // Connect to mongo DB.
-        await this.dbConnectionController.init()
+        await this.dbConnectionController.init();
 
         // Synchronisation service
-        await this.synchronisationService.checkConnectionStatus().then(async (res) =>{    
-            await this.synchronisationService.setConnectionStatus(res);
-            await this.synchronisationService.init();
-          }).catch((err) => {
-            handleMessage(RESPONSE_MESSAGE.FAILED_REFRESH_CONNECTION, err)
-          });
+        await this.synchronisationService.init();
     }
 
     // get storage type
@@ -89,17 +85,17 @@ export class StorageController{
      * @param data data
      * @description Check storage type, and pass data to writeExec(entityName, data)
      */
-    public writeData(entityName: string, entityUUID: string, data: string) {
+    public writeData(entityName: string, entityUUID: string, data) {
         
         // auto=append UUID
-        let JSONdata = JSON.parse(data);
-        JSONdata["uuid"] = entityUUID;
+        // let JSONdata = JSON.parse(data);
+        data["uuid"] = entityUUID;
         
         if (this.getStorageType(entityName) === DB.FILE) {
-            writeExec(entityName, JSONdata);
+            writeExec(entityName, data);
         }
         if (this.getStorageType(entityName) === DB.MONGO) {
-            this.dbConnectionController.writeExec(entityName, JSONdata);
+            this.dbConnectionController.writeExec(entityName, data);
         }
     }
 

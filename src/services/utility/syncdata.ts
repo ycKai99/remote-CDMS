@@ -1,8 +1,8 @@
-import { FPENTITYNAME, URL_SYNC_REMOTE_DATA } from "../../interfaces/const_setting";
+import { FPENTITYNAME, URL_SYNC_REMOTE_DATA } from "../../interfaces/constsetting";
 import { writeExec } from "./writedata";
 import fs = require('graceful-fs')
-import { fingerprintDataInterface } from "../../interfaces/file_message_type.interface";
-import { postAxiosMethod } from "../axios/post_method";
+import { fingerprintDataInterface } from "../../interfaces/message.interface";
+import { postAxiosMethod } from "../axios/postmethod";
 
 export function syncData(res, fpTemplateData: string[], uuidArray) {
     if(res.syncData.length !== 0) {

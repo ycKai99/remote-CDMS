@@ -1,5 +1,5 @@
 import { handleMessage } from "../utility/handlestatusmessage";
-import { RESPONSE_MESSAGE } from "../../interfaces/const_setting";
+import { RESPONSE_MESSAGE } from "../../interfaces/constsetting";
 
 const axios = require('axios')
 

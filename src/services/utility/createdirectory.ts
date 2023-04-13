@@ -1,5 +1,5 @@
 import fs = require('graceful-fs')
-import { RESPONSE_MESSAGE } from '../../interfaces/const_setting';
+import { RESPONSE_MESSAGE } from '../../interfaces/constsetting';
 import { handleMessage } from './handlestatusmessage';
 
 export function makeDirectory(dir: string) {

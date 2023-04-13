@@ -1,5 +1,5 @@
 import fs = require('graceful-fs')
-import { DIRECTORY, FILE_EXTENSION, RESPONSE_MESSAGE } from '../../interfaces/const_setting';
+import { DIRECTORY, FILE_EXTENSION, RESPONSE_MESSAGE } from '../../interfaces/constsetting';
 import { handleMessage } from './handlestatusmessage';
 
 export function writeExec(filePath, data) {

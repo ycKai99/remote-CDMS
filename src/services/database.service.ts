@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'; 
 import { handleMessage } from './utility/handlestatusmessage';
-import { FPENTITYNAME, RESPONSE_MESSAGE } from '../interfaces/const_setting';
+import { FPENTITYNAME, RESPONSE_MESSAGE } from '../interfaces/constsetting';
 const mongoose = require('mongoose');
 
 @Injectable()
@@ -9,17 +9,19 @@ export class DbConnectionController {
     private dbConnection;
 
     private fpTemplateSchema = new mongoose.Schema({
+        uuid: String,
+        fpuuid: String,
         fpid: String,
         registeredDate: String,
         status: String,
         location: String,
-        uuid: String,
-        imageName: String,
         personCode: String,
         position: String
     });
     
     private notificationSchema = new mongoose.Schema({
+        uuid: String,
+        fpuuid: String,
         message: String,
         ReceivedDate: String,
         InstanceID: String,
@@ -27,30 +29,27 @@ export class DbConnectionController {
         EntityTypeName: String,
         ID: String,
         Code: String,
-        Operation: String,
-        uuid: String
+        Operation: String
     });
     
     private responseSchema = new mongoose.Schema({
+        uuid: String,
+        fpuuid: String,
         time: String,
-        message: String,
-        uuid: String
+        message: String
     });
 
     private locationTagSchema = new mongoose.Schema({
         uuid: String,
+        fpuuid: String,
         tag: String
     });
 
     private locationRelationSchema = new mongoose.Schema({
+        uuid: String,
         child: String,
         parent: String
     });
-
-    private fpImageScheme = new mongoose.Schema({
-        uuid: String,
-        image: String
-    })
 
     constructor(){}
 
@@ -64,16 +63,16 @@ export class DbConnectionController {
         });
         this.dbConnection = mongoose.connection;
         this.dbConnection.on("connected", (err, res) => {
-            handleMessage(RESPONSE_MESSAGE.DATABASE_CONNECTED)
+            handleMessage(RESPONSE_MESSAGE.DATABASE_CONNECTED);
         });
         this.dbConnection.on("error", (err) => {
-            handleMessage(RESPONSE_MESSAGE.DATABASE_CONNECT_ERROR, err)
+            handleMessage(RESPONSE_MESSAGE.DATABASE_CONNECT_ERROR, err);
         });
         this.dbConnection.on("disconnected", () => {
-            handleMessage(RESPONSE_MESSAGE.DATABASE_DISCONNECTED) 
+            handleMessage(RESPONSE_MESSAGE.DATABASE_DISCONNECTED);
         })
         this.dbConnection.on("reconnected", () => {
-            handleMessage(RESPONSE_MESSAGE.DATABASE_RECONNECTED)
+            handleMessage(RESPONSE_MESSAGE.DATABASE_RECONNECTED);
         }) 
     }
 
@@ -92,8 +91,6 @@ export class DbConnectionController {
                 return mongoose.model(entityName, this.locationTagSchema);
             case FPENTITYNAME.LOCATION_REL:
                 return mongoose.model(entityName, this.locationRelationSchema);
-            case FPENTITYNAME.FP_IMAGE:
-                return mongoose.model(entityName, this.fpImageScheme);
         }
     }
 
@@ -127,9 +124,9 @@ export class DbConnectionController {
     writeExec(entityName: string, data) {
         let mongoModel = this.returnModelType(entityName);
         mongoModel.create(data).then((res) => {
-            handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_SAVE_DATA)
+            handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_SAVE_DATA);
         }).catch((err) => {
-            handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_SAVE_DATA, err)
+            handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_SAVE_DATA, err);
         })
     }
 
@@ -145,10 +142,10 @@ export class DbConnectionController {
         let mongoModel = this.returnModelType(entityNames);
         mongoModel.updateOne({uuid: data.uuid}, data).then((res) => {
             if(res.modifiedCount === 0) {
-                handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_UPDATE_DATA, {response: {data: "modifiedCount is 0."}})
+                handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_UPDATE_DATA, {response: {data: "modifiedCount is 0."}});
             }
             else {
-                handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_UPDATE_DATA)
+                handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_UPDATE_DATA);
             }
         }).catch((err) => {
             handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_UPDATE_DATA, err)
@@ -164,13 +161,13 @@ export class DbConnectionController {
         let mongoModel = this.returnModelType(entityName);
         mongoModel.deleteOne({uuid: entityUUID}).then((res) => {
            if(res.deletedCount === 0) {
-            handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_DELETE_DATA, {response: {data: "deletedCount is 0."}})
+            handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_DELETE_DATA, {response: {data: "deletedCount is 0."}});
            }
            else{
-            handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_DELETE_DATA)
+            handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_DELETE_DATA);
            }
         }).catch((err) => {
-            handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_DELETE_DATA, err)
+            handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_DELETE_DATA, err);
         })
-    }//fingerprintTemplateData, registeredFingerprintMessage, handleResponseMessage, locationtag, locationrelation, fingerprintImage
+    }//fingerprintTemplateData, registeredFingerprintMessage, handleResponseMessage, locationtag, locationrelation
 }
