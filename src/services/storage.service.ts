@@ -88,14 +88,14 @@ export class StorageController{
     public writeData(entityName: string, entityUUID: string, data) {
         
         // auto=append UUID
-        // let JSONdata = JSON.parse(data);
-        data["uuid"] = entityUUID;
-        
+        let JSONdata = JSON.parse(data);
+        JSONdata["uuid"] = entityUUID;
+
         if (this.getStorageType(entityName) === DB.FILE) {
             writeExec(entityName, data);
         }
         if (this.getStorageType(entityName) === DB.MONGO) {
-            this.dbConnectionController.writeExec(entityName, data);
+            this.dbConnectionController.writeExec(entityName, JSONdata);
         }
     }
 
