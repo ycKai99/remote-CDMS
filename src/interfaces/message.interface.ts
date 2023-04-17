@@ -1,42 +1,30 @@
-import { PROCESS_STATUS } from "./constsetting";
+import { OPERATION, PROCESS_STATUS } from "./constsetting";
 
 // fingerprint data interface
 export interface fingerprintDataInterface {
     uuid: string;
-    fpuuid: string;
-    fpid: string;
+    fpUuid: string;
+    fpTemplate: string;
     registeredDate: string;
     status: PROCESS_STATUS;
     location: string;
     personCode: string;
     position: string;
-}
-
-// message notification interface
-export interface messageNotificationInterface {
-    uuid: string;
-    fpuuid: string;
-    message: string;
-    ReceivedDate: string;
-    InstanceID: string;
-    EntityTypeID: string;
-    EntityTypeName: string;
-    ID: string;
-    Code: string;
-    Operation: string;
+    masterfp?: boolean;
 }
 
 // success or error message interface
-export interface responseMessageInterface {
+export interface eventMessageInterface {
     uuid: string;
-    fpuuid: string;
+    fpUuid: string;
     time: string;
     message: string;
+    opration?: OPERATION;
 }
 
 export interface locationTagInterface {
     uuid: string;
-    fpuuid: string;
+    fpUuid: string;
     tag: string;
 }
 

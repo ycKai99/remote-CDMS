@@ -9,46 +9,34 @@ export class DbConnectionController {
     private dbConnection;
 
     private fpTemplateSchema = new mongoose.Schema({
-        uuid: String,
-        fpuuid: String,
-        fpid: String,
-        registeredDate: String,
-        status: String,
-        location: String,
-        personCode: String,
-        position: String
-    });
-    
-    private notificationSchema = new mongoose.Schema({
-        uuid: String,
-        fpuuid: String,
-        message: String,
-        ReceivedDate: String,
-        InstanceID: String,
-        EntityTypeID: String,
-        EntityTypeName: String,
-        ID: String,
-        Code: String,
-        Operation: String
+        uuid: {type: String, required: true, lowercase: true, unique: true},
+        fpuuid: {type: String, required: true, lowercase: true},
+        fpTemplate: {type: String, required: true},
+        registeredDate: {type: String, required: true},
+        status: {type: String, required: true},
+        location: {type: String, required: true},
+        personCode: {type: String, required: true},
+        position: {type: String, required: true},
+        masterfp: {type: Boolean}
     });
     
     private responseSchema = new mongoose.Schema({
-        uuid: String,
-        fpuuid: String,
-        time: String,
-        message: String
+        uuid: {type: String, required: true, lowercase: true, unique: true},
+        fpuuid: {type: String, required: true, lowercase: true},
+        time: {type: String, required: true},
+        message: {type: String, required: true}
     });
 
     private locationTagSchema = new mongoose.Schema({
-        uuid: String,
-        fpuuid: String,
-        tag: String
+        uuid: {type: String, required: true, lowercase: true, unique: true},
+        fpuuid: {type: String, required: true, lowercase: true},
+        tag: {type: String, required: true}
     });
 
     private locationRelationSchema = new mongoose.Schema({
-        uuid: String,
-        child: String,
-        parent: String
+        uuid: {type: String, required: true, lowercase: true, unique: true},
+        child: {type: String, required: true},
+        parent: {type: String, required: true}
     });
 
     constructor(){}
@@ -56,7 +44,7 @@ export class DbConnectionController {
     /**
      * @description connect to mongodb 
      */
-    async init() {
+    public async init() {
         mongoose.connect("mongodb://127.0.0.1:27017/fingerprint", {
             useNewUrlParser: "true",
             useUnifiedTopology: true
@@ -79,12 +67,10 @@ export class DbConnectionController {
     /**
      * @description return model based on entityName 
      */
-    returnModelType(entityName) {
+    private returnModelType(entityName) {
         switch(entityName) {
             case FPENTITYNAME.FP_TEMPLATE_MSG:
                 return mongoose.model(entityName, this.fpTemplateSchema);
-            case FPENTITYNAME.NOTIF_MSG:
-                return mongoose.model(entityName, this.notificationSchema);
             case FPENTITYNAME.RES_MSG:
                 return mongoose.model(entityName, this.responseSchema);
             case FPENTITYNAME.LOCATION_TAG:
@@ -101,7 +87,7 @@ export class DbConnectionController {
      * @param entityUUID type : string (optional, used when read single data)
      * @description read data from mongodb 
      */
-    async readExec(entityName: string, entityUUID?: string) {
+    public async readExec(entityName: string, entityUUID?: string) {
         let findData = {};
         if(entityUUID) {findData = {uuid: entityUUID}};
         let collection = this.returnModelType(entityName);
@@ -117,11 +103,11 @@ export class DbConnectionController {
     }
 
     /**
-     * @param entityName string
+     * @param entityName type : string
      * @param data data
      * @description add data into mongodb 
      */
-    writeExec(entityName: string, data) {
+    public writeExec(entityName: string, data) {
         let mongoModel = this.returnModelType(entityName);
         mongoModel.create(data).then((res) => {
             handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_SAVE_DATA);
@@ -131,11 +117,11 @@ export class DbConnectionController {
     }
 
     /**
-     * @param entityName string
+     * @param entityName type : string
      * @param data data
      * @description update data to mongodb 
      */
-    updateExec(entityNames: string, data) {
+    public updateExec(entityNames: string, data) {
         // const {uuid,entityName, ...excludeData} = data
         // console.log('excludedata is ',excludeData)
         // console.log('data is ',data)
@@ -153,11 +139,11 @@ export class DbConnectionController {
     }
 
     /**
-     * @param entityName string
-     * @param data data
+     * @param entityName type : string
+     * @param entityUUID type : string
      * @description delete data from mongodb 
      */
-    deleteExec(entityName: string, entityUUID: string) {
+    public deleteExec(entityName: string, entityUUID: string) {
         let mongoModel = this.returnModelType(entityName);
         mongoModel.deleteOne({uuid: entityUUID}).then((res) => {
            if(res.deletedCount === 0) {
@@ -169,5 +155,5 @@ export class DbConnectionController {
         }).catch((err) => {
             handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_DELETE_DATA, err);
         })
-    }//fingerprintTemplateData, registeredFingerprintMessage, handleResponseMessage, locationtag, locationrelation
+    }//fingerprintTemplateData, handleResponseMessage, locationtag, locationrelation
 }

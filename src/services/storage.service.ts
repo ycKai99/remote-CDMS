@@ -18,12 +18,11 @@ export class StorageController{
 
     constructor(){
         console.log('storage running...')
-        // this.init();
     }
 
     // initial setup the storage type
     public async init() {
-        //storage="fingerprintTemplateData=mongo,handleResponseMessage=mongo,locationrelation=mongo,locationtag=mongo,registeredFingerprintMessage=mongo"
+        //storage="fingerprintTemplateData=mongo,handleResponseMessage=mongo,locationrelation=mongo,locationtag=mongo"
         let storage: string = process.env.storage;
         let storageArray: string[] = storage.split(",");
         storageArray.forEach(
@@ -63,13 +62,12 @@ export class StorageController{
     // set storage type
     public setStorageType(entityName: string, data: DB) {
         this.entityName_storageType[entityName] = data;
-        //this.storageType = data;
     }
 
     /**
-     * @param entityName string
-     * @param entityUUID optional, used when read image
-     * @description Check storage type, and pass data to readExec(entityName, entityUUID)
+     * @param entityName type : string
+     * @param entityUUID type : string (optional)
+     * @description read data
      */
     public readData(entityName: string, entityUUID?: string) {
         if (this.getStorageType(entityName) === DB.FILE) {
@@ -81,11 +79,12 @@ export class StorageController{
     }
 
     /**
-     * @param entityName string
-     * @param data data
-     * @description Check storage type, and pass data to writeExec(entityName, data)
+     * @param entityName type : string
+     * @param entityUUID type : string
+     * @param data type : string
+     * @description write data
      */
-    public writeData(entityName: string, entityUUID: string, data) {
+    public writeData(entityName: string, entityUUID: string, data: string) {
         
         // auto=append UUID
         let JSONdata = JSON.parse(data);
@@ -100,9 +99,10 @@ export class StorageController{
     }
 
     /**
-     * @param entityName string
-     * @param data data
-     * @description Check storage type, and pass data to updateExec(entityName, data)
+     * @param entityName type : string
+     * @param entityUUID type : string
+     * @param data type : string
+     * @description update data
      */
     public updateData(entityName: string, entityUUID:string, data: string) {
 
@@ -119,9 +119,9 @@ export class StorageController{
     }
 
     /**
-     * @param entityName string
-     * @param data data
-     * @description Check storage type, and pass data to deleteExec(entityName, data)
+     * @param entityName type : string
+     * @param entityUUID type : string
+     * @description delete data
      */
     public deleteData(entityName: string, entityUUID: string) {
 

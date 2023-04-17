@@ -5,7 +5,7 @@ import { StorageController } from './services/storage.service';
 @Injectable()
 export class AppService {
  
-  storageController = new StorageController();
+  private storageController = new StorageController();
 
   constructor() {
     console.log('app running...')
