@@ -1,0 +1,156 @@
+doctype html
+head
+    meta(name='viewport' content='width=device-width, initial-scale=1')
+    script(src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js")
+    style.
+        .box {
+            position: fixed;
+            top: 20px;
+            left: 400px;
+            z-index: 2;
+        }
+        .tip {
+            background-color: #fffbce;
+            padding: 8px;
+            margin: 3.2em 14em 2em 0;
+            display: table ;
+            font-size: 12px;
+        }
+        span.title {
+            background: #ffed00;
+            padding: .6em 1.5em;
+            font-weight: 600;
+            top: -10px;
+            left: -20px;
+            position: relative;
+        }
+        ul, #myUL {
+        list-style-type: none;
+        }
+
+        #myUL {
+        margin: 0;
+        padding: 0;
+        }
+        .caret {
+        cursor: pointer;
+        -webkit-user-select: none; /* Safari 3.1+ */
+        -moz-user-select: none; /* Firefox 2+ */
+        -ms-user-select: none; /* IE 10+ */
+        user-select: none;
+        }
+
+        .caret::before {
+        content: "\25B6";
+        color: black;
+        display: inline-block;
+        margin-right: 6px;
+        }
+
+        .caret-down::before {
+        -ms-transform: rotate(90deg); /* IE 9 */
+        -webkit-transform: rotate(90deg); /* Safari */'
+        transform: rotate(90deg);  
+        }
+
+        .nested {
+        display: none;
+        }
+
+        .active {
+        display: block;
+        } 
+
+
+body(style="width: 500px; background:" + jadeargument["background"])
+    h3="Test upload for Content Delivery Management Server"  
+    p="(1) Click 'Browse...' button to upload a file"
+    form(method="post",id="submit_form",name="submit_form")  
+        input(type="file",id="filename",name="filename") 
+        input(type="hidden",id="filetype",name="filetype")  
+        input(type="hidden",id="filesize",name="filesize")  
+        input(type="hidden",id="lastModified",name="lastModified")  
+        input(type="hidden",id="filedata",name="filedata")  
+        button(type="button",id="formsubmit",name="formsubmit") Submit 
+    br
+    p=" (2) Check last uploaded data:"
+    textarea(style="word-wrap: break-word;",rows="40" cols="200")=jadeargument['lastUpload']
+
+    script.     
+        document.getElementById('formsubmit').addEventListener('click', () => {  
+            const reader = new FileReader();
+            var file_object = $("#filename")[0].files[0]; // Getting the properties of file from file field 
+            if (file_object) { 
+            
+                reader.addEventListener('load', (event) => {
+                    const result = event.target.result;
+
+                    // Set back the value
+                    $("#filedata").val(file_object.name)   
+                    $("#filetype").val(file_object.type)  
+                    $("#filesize").val(file_object.size)   
+                    $("#lastModified").val(file_object.lastModified)  
+                    $("#filedata").val(result)  
+
+                    $("#submit_form").submit()
+                });  
+                reader.readAsDataURL(file_object);  
+            } 
+             
+        })
+
+    //- table(style="width: 500px;height: 21px;border-bottom:1px solid black")
+    //-     tr
+    //-         td(style="width:260px")
+    //-             form(method='post', action='/fissourcepage')
+    //-                 input(type='submit', value='Back', style='font-size:14px;width:100px; border-radius:6px;background: #303030;color: #F5F5F5')
+    //-         td(style="width:150px;text-align: right")
+    //-             | Hi, 
+    //-             =jadeargument["FISUserName"]
+    //-         td(style="width:90px")
+    //-             form(method='post', action='/')
+    //-                 input(type='submit', id = 'sessionlogout', name = 'sessionlogout' ,value='Logout', style='width:90px;font-size:14px;border-radius:6px;background: #303030;color: #F5F5F5')
+    //- p   
+    //-     table(style="border-collapse:collapse;border-spacing:0")
+    //-         tr 
+    //-             td(colspan="2")
+    //-                 form(method='post', action='/ancestry')
+    //-                     table(style="border-collapse:collapse;border-spacing:0") 
+    //-                         tr 
+    //-                             td(colspan="2")
+    //-                                 if jadeargument.searchancestry
+    //-                                     input(type='text', value=jadeargument.searchancestry, name='searchancestry', style='padding: 3px 10px;border-radius:4px;width:240px')
+    //-                                 else
+    //-                                     input(type='text', value='', name='searchancestry', style='padding: 3px 10px;border-radius:4px;width:240px')
+    //-                                 .box(style="display:" + jadeargument["display"])   
+    //-                                     .tip
+    //-                                         span.title
+    //-                                             | NOTE!
+    //-                                         p
+    //-                                             =jadeargument['ancestrymessage']
+    //-                         tr 
+    //-                             td 
+    //-                                 input(type='submit', value='Search Tree', name= 'searchtree' style='width:120px;height:44px;text-align:center;border-radius:4px')
+    //-                             td 
+    //-                                 input(type='submit', value='Search Name', name='searchname', style='width:150px;height:44px;text-align:center;border-radius:4px')  
+    //-         tr 
+    //-             td 
+    //-                 form(method='post', action='/ancestry')
+    //-                     input(type='submit', value='New Search', name= 'newsearch' style='width:120px;height:44px;text-align:center;border-radius:4px')
+    //-             td 
+    //-                 form(method='post', action='/ancestry_default')
+    //-                     input(type='submit',value='Switch to Default View', style='width:150px;height:44px;text-align:center;border-radius:4px')
+    
+
+    //-     p   
+    //-         table
+    //-             tr
+    //-                 th(style="width:300px;",align="left") 
+    //-                     |Objects 
+    //-                 th(style="width:200px",align="left") 
+    //-                     |PBL
+    //-             if jadeargument["row1"]
+    //-                 each val1, key1 in jadeargument["row1"]  
+    //-                     tr  
+    //-                         td=jadeargument["row1"][key1]
+    //-                         td=jadeargument["row2"][key1]

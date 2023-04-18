@@ -112,7 +112,8 @@ export enum FPENTITYNAME {
     FP_TEMPLATE_MSG = "fingerprintTemplateData",
     RES_MSG = "handleStatusMessage",
     LOCATION_TAG = "locationtag",
-    LOCATION_REL = "locationrelation"
+    LOCATION_REL = "locationrelation",
+    GenericFileData = "genericFileData" 
 }
 
 export enum OPERATION {
