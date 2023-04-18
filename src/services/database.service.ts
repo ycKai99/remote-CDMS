@@ -10,7 +10,7 @@ export class DbConnectionController {
 
     private fpTemplateSchema = new mongoose.Schema({
         uuid: {type: String, required: true, lowercase: true, unique: true},
-        fpuuid: {type: String, required: true, lowercase: true},
+        fpUuid: {type: String, required: true, lowercase: true},
         fpTemplate: {type: String, required: true},
         registeredDate: {type: String, required: true},
         status: {type: String, required: true},
@@ -22,14 +22,14 @@ export class DbConnectionController {
     
     private responseSchema = new mongoose.Schema({
         uuid: {type: String, required: true, lowercase: true, unique: true},
-        fpuuid: {type: String, required: true, lowercase: true},
+        fpUuid: {type: String, required: true, lowercase: true},
         time: {type: String, required: true},
         message: {type: String, required: true}
     });
 
     private locationTagSchema = new mongoose.Schema({
         uuid: {type: String, required: true, lowercase: true, unique: true},
-        fpuuid: {type: String, required: true, lowercase: true},
+        fpUuid: {type: String, required: true, lowercase: true},
         tag: {type: String, required: true}
     });
 

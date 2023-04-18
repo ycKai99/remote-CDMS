@@ -11,7 +11,7 @@ export function handleMessage(message: RESPONSE_MESSAGE, err?, res?, uuid?) {
 
     if(uuid) localUUID = uuid;
     console.log('MESSAGE : ',message);
-    if(err) console.log('ERROR IS : ');
+    if(err) console.log('ERROR IS : ',err);
     if(res) console.log('RESPONSE IS : ', res);
 
     // let responseMessage: responseMessageInterface = handleResponseMessage(message, localUUID);
