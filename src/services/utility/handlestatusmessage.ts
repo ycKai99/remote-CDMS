@@ -1,6 +1,6 @@
 
 import { FPENTITYNAME, RESPONSE_MESSAGE } from '../../interfaces/constsetting';
-import { responseMessageInterface } from '../../interfaces/message.interface';
+import { eventMessageInterface } from '../../interfaces/message.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { handleResponseMessage } from './generatemessage';
 import { writeExec } from './writedata';

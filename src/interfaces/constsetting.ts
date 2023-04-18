@@ -77,7 +77,7 @@ export const URL_GET_NEW_FPID: string = REMOTE_SERVER+"getNewFPId";
 export const URL_SYNC_REMOTE_DATA: string = REMOTE_SERVER+"syncRemoteData";
 export const URL_MOBILE_DEVICE: string = "http://192.168.100.54:8080";
 
-export const enum fingerprint{
+export const enum FINGERPRINT_POSITION{
     LEFT_THUMB,
     LEFT_INDEX,
     LEFT_MIDDLE,
@@ -91,7 +91,6 @@ export const enum fingerprint{
     UNKNOWN
 }
 
-
 export enum DB {
     FILE = "file",
     MONGO = "mongo"
@@ -104,14 +103,22 @@ export enum STAT {
 
 export enum PROCESS_STATUS {
     NEW = "new",
+    UNREGISTER = "unregister",
+    REGISTERED = "registered",
     VERIFIED = "verified"
 }
 
 export enum FPENTITYNAME {
     FP_TEMPLATE_MSG = "fingerprintTemplateData",
-    NOTIF_MSG = "registeredFingerprintMessage",
     RES_MSG = "handleStatusMessage",
     LOCATION_TAG = "locationtag",
     LOCATION_REL = "locationrelation",
-    GenericFileData = "genericFileData"
+    GenericFileData = "genericFileData" 
+}
+
+export enum OPERATION {
+    NEW_FINGERPRINT = "new fingerprint",
+    UNREGISTER_FINGERPRINT = "unregister fingerprint",
+    REGISTERED_FINGERPRINT = "registered fingerprint",
+    VERIFIED_FINGERPRINT = "verified fingerprint"
 }
