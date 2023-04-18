@@ -50,6 +50,15 @@ export class DbConnectionController {
         child: String,
         parent: String
     });
+   
+    public genericFileDataSchema = new mongoose.Schema({
+        uuid: String,
+        filename: String,
+        filetype: String,
+        filesize: String,
+        lastModified: String,
+        filedata:String,
+    }); 
 
     constructor(){}
 
@@ -91,6 +100,8 @@ export class DbConnectionController {
                 return mongoose.model(entityName, this.locationTagSchema);
             case FPENTITYNAME.LOCATION_REL:
                 return mongoose.model(entityName, this.locationRelationSchema);
+            case FPENTITYNAME.GenericFileData:
+                return mongoose.model(entityName, this.genericFileDataSchema);
         }
     }
 

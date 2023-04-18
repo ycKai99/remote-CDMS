@@ -112,5 +112,6 @@ export enum FPENTITYNAME {
     NOTIF_MSG = "registeredFingerprintMessage",
     RES_MSG = "handleStatusMessage",
     LOCATION_TAG = "locationtag",
-    LOCATION_REL = "locationrelation"
+    LOCATION_REL = "locationrelation",
+    GenericFileData = "genericFileData"
 }
