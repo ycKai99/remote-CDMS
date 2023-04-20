@@ -102,23 +102,19 @@ export enum STAT {
 }
 
 export enum PROCESS_STATUS {
-    NEW = "new",
-    UNREGISTER = "unregister",
-    REGISTERED = "registered",
-    VERIFIED = "verified"
-}
-
-export enum FPENTITYNAME {
-    FP_TEMPLATE_MSG = "fingerprintTemplateData",
-    RES_MSG = "handleStatusMessage",
-    LOCATION_TAG = "locationtag",
-    LOCATION_REL = "locationrelation",
-    GenericFileData = "genericFileData" 
-}
-
-export enum OPERATION {
     NEW_FINGERPRINT = "new fingerprint",
     UNREGISTER_FINGERPRINT = "unregister fingerprint",
     REGISTERED_FINGERPRINT = "registered fingerprint",
     VERIFIED_FINGERPRINT = "verified fingerprint"
+}
+
+export enum FPENTITYNAME {
+    FP_TEMPLATE_MSG = "fingerprintTemplateData",
+    EVENT_MSG = "eventMessage",
+    LOCATION_TAG_MSG = "locationTag",
+    LOCATION_REL_MSG = "locationRelation",
+    GENERICFILEDATA = "genericFileData",
+    DEVICE_TAG_MSG = "deviceTag",
+    PERSON_PROF_MSG = "personProfile"
+
 }

@@ -1,4 +1,4 @@
-import { OPERATION, PROCESS_STATUS } from "./constsetting";
+import { PROCESS_STATUS } from "./constsetting";
 
 // fingerprint data interface
 export interface fingerprintDataInterface {
@@ -19,17 +19,32 @@ export interface eventMessageInterface {
     fpUuid: string;
     time: string;
     message: string;
-    opration?: OPERATION;
+    messageData?: string;
+    messageType: "FPEevent";
+    deviceNo: string;
 }
 
 export interface locationTagInterface {
     uuid: string;
     fpUuid: string;
-    tag: string;
+    location: string;
 }
 
 export interface locationRelationInterface {
     uuid: string;
     child: string;
     parent: string;
+}
+
+export interface deviceTagInterface {
+    uuid: string;
+    deviceNo: string;
+    location: string;
+}
+
+// person profile interface
+export interface personProfileInterface {
+    uuid: string;
+    personCode: string;
+    personName: string;
 }

@@ -15,22 +15,25 @@ export class DbConnectionController {
         registeredDate: {type: String, required: true},
         status: {type: String, required: true},
         location: {type: String, required: true},
-        personCode: {type: String, required: true},
-        position: {type: String, required: true},
+        personCode: {type: String},
+        position: {type: String},
         masterfp: {type: Boolean}
     });
     
-    private responseSchema = new mongoose.Schema({
+    private eventSchema = new mongoose.Schema({
         uuid: {type: String, required: true, lowercase: true, unique: true},
         fpUuid: {type: String, required: true, lowercase: true},
         time: {type: String, required: true},
-        message: {type: String, required: true}
+        message: {type: String, required: true},
+        messageType: {type: String, required: true},
+        messageData: {type: String},
+        deviceNo: {type: String, required: true}
     });
 
     private locationTagSchema = new mongoose.Schema({
         uuid: {type: String, required: true, lowercase: true, unique: true},
         fpUuid: {type: String, required: true, lowercase: true},
-        tag: {type: String, required: true}
+        location: {type: String, required: true}
     });
 
     private locationRelationSchema = new mongoose.Schema({
@@ -45,8 +48,20 @@ export class DbConnectionController {
         filetype: String,
         filesize: String,
         lastModified: String,
-        filedata:String,
-    }); 
+        filedata: String,
+    });
+
+    private deviceTagSchema = new mongoose.Schema({
+        uuid: {type: String, required: true, lowercase: true, unique: true},
+        deviceNo: {type: String, required: true},
+        location: {type: String, required: true}
+    });
+
+    private personProfileSchema = new mongoose.Schema({
+        uuid: {type: String, required: true, lowercase: true, unique: true},
+        personCode: {type: String, required: true},
+        personName: {type: String, required: true}
+    });
 
     constructor(){}
 
@@ -76,18 +91,22 @@ export class DbConnectionController {
     /**
      * @description return model based on entityName 
      */
-    private returnModelType(entityName) {
+    private returnModelType(entityName: string) {
         switch(entityName) {
             case FPENTITYNAME.FP_TEMPLATE_MSG:
                 return mongoose.model(entityName, this.fpTemplateSchema);
-            case FPENTITYNAME.RES_MSG:
-                return mongoose.model(entityName, this.responseSchema);
-            case FPENTITYNAME.LOCATION_TAG:
+            case FPENTITYNAME.EVENT_MSG:
+                return mongoose.model(entityName, this.eventSchema);
+            case FPENTITYNAME.LOCATION_TAG_MSG:
                 return mongoose.model(entityName, this.locationTagSchema);
-            case FPENTITYNAME.LOCATION_REL:
+            case FPENTITYNAME.LOCATION_REL_MSG:
                 return mongoose.model(entityName, this.locationRelationSchema);
-            case FPENTITYNAME.GenericFileData:
+            case FPENTITYNAME.GENERICFILEDATA:
                 return mongoose.model(entityName, this.genericFileDataSchema);
+            case FPENTITYNAME.DEVICE_TAG_MSG:
+                return mongoose.model(entityName, this.deviceTagSchema);
+            case FPENTITYNAME.PERSON_PROF_MSG:
+                return mongoose.model(entityName, this.personProfileSchema);
         }
     }
 

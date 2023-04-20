@@ -22,7 +22,9 @@ export function handleResponseMessage(fpUuid: string, data: string) {
     uuid: generateUUID(),
     fpUuid: fpUuid,
     time : generateDate(),
-    message: data
+    message: data,
+    messageType: "FPEevent",
+    deviceNo: "ZKteco"
   }
   return messageDetails;
 }
@@ -35,7 +37,7 @@ export function locationTagMessage_ext(fpUuid: string, tagString: string) {
   let messageDetails: locationTagInterface = {
     uuid: generateUUID(),
     fpUuid: fpUuid,
-    tag: tagString
+    location: tagString
   }
   return messageDetails;
 }
