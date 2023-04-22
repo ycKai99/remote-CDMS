@@ -12,7 +12,7 @@ export class DbConnectionController {
         uuid: {type: String, required: true, lowercase: true, unique: true},
         fpUuid: {type: String, required: true, lowercase: true},
         fpTemplate: {type: String, required: true},
-        registeredDate: {type: String, required: true},
+        registeredDate: {type: Date, required: true},
         status: {type: String, required: true},
         location: {type: String, required: true},
         personCode: {type: String},
@@ -23,7 +23,7 @@ export class DbConnectionController {
     private eventSchema = new mongoose.Schema({
         uuid: {type: String, required: true, lowercase: true, unique: true},
         fpUuid: {type: String, required: true, lowercase: true},
-        time: {type: String, required: true},
+        registeredDate: {type: Date, required: true},
         message: {type: String, required: true},
         messageType: {type: String, required: true},
         messageData: {type: String},
@@ -120,8 +120,8 @@ export class DbConnectionController {
     public async readExec(entityName: string, entityUUID?: string) {
         let findData = {};
         if(entityUUID) {findData = {uuid: entityUUID}};
-        let collection = this.returnModelType(entityName);
-        let data: string = "";
+        const collection = this.returnModelType(entityName);
+        let data: string;
         try {
             data = JSON.stringify(await collection.find(findData));
             handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_READ_DATA);
@@ -137,9 +137,9 @@ export class DbConnectionController {
      * @param data data
      * @description add data into mongodb 
      */
-    public writeExec(entityName: string, data) {
-        let mongoModel = this.returnModelType(entityName);
-        mongoModel.create(data).then((res) => {
+    public async writeExec(entityName: string, data) {
+        const mongoModel = this.returnModelType(entityName);
+        await mongoModel.create(data).then((res) => {
             handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_SAVE_DATA);
         }).catch((err) => {
             handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_SAVE_DATA, err);
@@ -151,12 +151,12 @@ export class DbConnectionController {
      * @param data data
      * @description update data to mongodb 
      */
-    public updateExec(entityNames: string, data) {
+    public async updateExec(entityNames: string, data) {
         // const {uuid,entityName, ...excludeData} = data
         // console.log('excludedata is ',excludeData)
         // console.log('data is ',data)
-        let mongoModel = this.returnModelType(entityNames);
-        mongoModel.updateOne({uuid: data.uuid}, data).then((res) => {
+        const mongoModel = this.returnModelType(entityNames);
+        await mongoModel.updateOne({uuid: data.uuid}, data).then((res) => {
             if(res.modifiedCount === 0) {
                 handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_UPDATE_DATA, {response: {data: "modifiedCount is 0."}});
             }
@@ -173,9 +173,9 @@ export class DbConnectionController {
      * @param entityUUID type : string
      * @description delete data from mongodb 
      */
-    public deleteExec(entityName: string, entityUUID: string) {
-        let mongoModel = this.returnModelType(entityName);
-        mongoModel.deleteOne({uuid: entityUUID}).then((res) => {
+    public async deleteExec(entityName: string, entityUUID: string) {
+        const mongoModel = this.returnModelType(entityName);
+        await mongoModel.deleteOne({uuid: entityUUID}).then((res) => {
            if(res.deletedCount === 0) {
             handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_DELETE_DATA, {response: {data: "deletedCount is 0."}});
            }

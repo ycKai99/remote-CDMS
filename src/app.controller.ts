@@ -97,9 +97,9 @@ export class AppController {
   }
   
   @Post('data')
-  dataOperation(@Body() body) {
+  async dataOperation(@Body() body) {
     let postBody: dataStorageInterface = body;
-    return this.appService.dataOperation(postBody);
+    return await this.appService.dataOperation(postBody);
   }
   
   res_render(jadefile: any, res: any, jadeargument: any) {

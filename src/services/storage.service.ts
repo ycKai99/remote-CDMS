@@ -23,15 +23,15 @@ export class StorageController{
     // initial setup the storage type
     public async init() {
         //storage="fingerprintTemplateData=mongo,handleResponseMessage=mongo,locationrelation=mongo,locationtag=mongo"
-        let storage: string = process.env.storage;
-        let storageArray: string[] = storage.split(",");
+        const storage: string = process.env.storage;
+        const storageArray: string[] = storage.split(",");
         storageArray.forEach(
             //fingerprintTemplateData=mongo
             (keyvalue: string) => {
                 let keyvalueArray: string[];
                 keyvalueArray = keyvalue.split("="); 
-                let key: string = keyvalueArray[0];
-                let value: string = keyvalueArray[1];
+                const key: string = keyvalueArray[0];
+                const value: string = keyvalueArray[1];
                 let DBvalue: DB;
 
                 if(value.toLocaleLowerCase() === 'file')
@@ -69,12 +69,12 @@ export class StorageController{
      * @param entityUUID type : string (optional)
      * @description read data
      */
-    public readData(entityName: string, entityUUID?: string) {
+    public async readData(entityName: string, entityUUID?: string) {
         if (this.getStorageType(entityName) === DB.FILE) {
             return readExec(entityName, entityUUID);
         }
         if (this.getStorageType(entityName) === DB.MONGO) {
-            return this.dbConnectionController.readExec(entityName, entityUUID);
+            return await this.dbConnectionController.readExec(entityName, entityUUID);
         }
     }
 
@@ -84,17 +84,17 @@ export class StorageController{
      * @param data type : string
      * @description write data
      */
-    public writeData(entityName: string, entityUUID: string, data: string) {
+    public async writeData(entityName: string, entityUUID: string, data: string) {
         
         // auto=append UUID
-        let JSONdata = JSON.parse(data);
+        const JSONdata = JSON.parse(data);
         JSONdata["uuid"] = entityUUID;
 
         if (this.getStorageType(entityName) === DB.FILE) {
             writeExec(entityName, data);
         }
         if (this.getStorageType(entityName) === DB.MONGO) {
-            this.dbConnectionController.writeExec(entityName, JSONdata);
+            await this.dbConnectionController.writeExec(entityName, JSONdata);
         }
     }
 
@@ -104,9 +104,9 @@ export class StorageController{
      * @param data type : string
      * @description update data
      */
-    public updateData(entityName: string, entityUUID:string, data: string) {
+    public async updateData(entityName: string, entityUUID:string, data: string) {
 
-        let JSONdata = JSON.parse(data);
+        const JSONdata = JSON.parse(data);
         JSONdata["uuid"] = entityUUID;
 
         if (this.getStorageType(entityName) === DB.FILE) {
@@ -114,7 +114,7 @@ export class StorageController{
             console.log("Not yet implemented file storage.");
         }
         if (this.getStorageType(entityName) === DB.MONGO) {
-          return this.dbConnectionController.updateExec(entityName, JSONdata);
+          return await this.dbConnectionController.updateExec(entityName, JSONdata);
         }
     }
 
@@ -123,7 +123,7 @@ export class StorageController{
      * @param entityUUID type : string
      * @description delete data
      */
-    public deleteData(entityName: string, entityUUID: string) {
+    public async deleteData(entityName: string, entityUUID: string) {
 
         if (this.getStorageType(entityName) === DB.FILE) {
         //   return deleteExec(entityName, data);
@@ -132,7 +132,7 @@ export class StorageController{
         if (this.getStorageType(entityName) === DB.MONGO) {
             console.log('entityName : ',entityName)
             console.log('entityUUID : ',entityUUID)
-          return this.dbConnectionController.deleteExec(entityName, entityUUID);
+          return await this.dbConnectionController.deleteExec(entityName, entityUUID);
         }
     }
 }

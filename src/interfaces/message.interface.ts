@@ -5,7 +5,7 @@ export interface fingerprintDataInterface {
     uuid: string;
     fpUuid: string;
     fpTemplate: string;
-    registeredDate: string;
+    registeredDate: Date;
     status: PROCESS_STATUS;
     location: string;
     personCode: string;
@@ -17,7 +17,7 @@ export interface fingerprintDataInterface {
 export interface eventMessageInterface {
     uuid: string;
     fpUuid: string;
-    time: string;
+    registeredDate: Date;
     message: string;
     messageData?: string;
     messageType: "FPEevent";

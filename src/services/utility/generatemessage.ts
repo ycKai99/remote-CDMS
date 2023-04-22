@@ -3,11 +3,11 @@ import { PROCESS_STATUS } from '../../interfaces/constsetting';
 import { v4 as uuidv4 } from 'uuid';
 
 export function zktecoFpMessage(fpUuid: string, fingerprintData, status: PROCESS_STATUS) {
-  let messageDetails: fingerprintDataInterface = {
+  const messageDetails: fingerprintDataInterface = {
       uuid: generateUUID(),
       fpUuid: fingerprintData['fpUuid'],
       fpTemplate: fingerprintData['fptemplate'],
-      registeredDate: generateDate(),
+      registeredDate: new Date(),
       status: fingerprintData['status'],
       location: process.env.LOCATION,
       personCode: fingerprintData['personCode'],
@@ -18,10 +18,10 @@ export function zktecoFpMessage(fpUuid: string, fingerprintData, status: PROCESS
 }
 
 export function handleResponseMessage(fpUuid: string, data: string) {
-  let messageDetails: eventMessageInterface = {
+  const messageDetails: eventMessageInterface = {
     uuid: generateUUID(),
     fpUuid: fpUuid,
-    time : generateDate(),
+    registeredDate : new Date(),
     message: data,
     messageType: "FPEevent",
     deviceNo: "ZKteco"
@@ -34,7 +34,7 @@ export function locationTagMessage(fpUuid: string) {
 }
 
 export function locationTagMessage_ext(fpUuid: string, tagString: string) {
-  let messageDetails: locationTagInterface = {
+  const messageDetails: locationTagInterface = {
     uuid: generateUUID(),
     fpUuid: fpUuid,
     location: tagString
@@ -43,7 +43,7 @@ export function locationTagMessage_ext(fpUuid: string, tagString: string) {
 }
 
 export function locationRelationMessage(child: string, parent: string) {
-  let messageDetails: locationRelationInterface = {
+  const messageDetails: locationRelationInterface = {
     uuid: generateUUID(),
     child: child,
     parent: parent
@@ -52,13 +52,13 @@ export function locationRelationMessage(child: string, parent: string) {
 }
 
 function generateUUID(): string {
-  let uuid = uuidv4();
+  const uuid = uuidv4();
   return uuid;
 }
 
 export function generateDate() {
-  let date = new Date();
-  let timezone = "Asia/Singapore"
-  let formattedDate = new Intl.DateTimeFormat("en-US", {timeZone: timezone, month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true,}).format(date)
+  const date = new Date();
+  const timezone = "Asia/Singapore"
+  const formattedDate = new Intl.DateTimeFormat("en-US", {timeZone: timezone, month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true,}).format(date)
   return formattedDate
 }
