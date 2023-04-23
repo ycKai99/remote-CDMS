@@ -16,7 +16,7 @@ export interface fingerprintDataInterface {
 // success or error message interface
 export interface eventMessageInterface {
     uuid: string;
-    fpUuid: string;
+    fpUuid?: string;
     registeredDate: Date;
     message: string;
     messageData?: string;

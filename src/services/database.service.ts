@@ -22,7 +22,7 @@ export class DbConnectionController {
     
     private eventSchema = new mongoose.Schema({
         uuid: {type: String, required: true, lowercase: true, unique: true},
-        fpUuid: {type: String, required: true, lowercase: true},
+        fpUuid: {type: String, lowercase: true},
         registeredDate: {type: Date, required: true},
         message: {type: String, required: true},
         messageType: {type: String, required: true},
