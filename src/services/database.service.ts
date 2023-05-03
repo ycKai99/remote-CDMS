@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'; 
+import { Injectable } from '@nestjs/common';
 import { handleMessage } from './utility/handlestatusmessage';
 import { FPENTITYNAME, RESPONSE_MESSAGE } from '../interfaces/constsetting';
 const mongoose = require('mongoose');
@@ -9,61 +9,68 @@ export class DbConnectionController {
     private dbConnection;
 
     private fpTemplateSchema = new mongoose.Schema({
-        uuid: {type: String, required: true, lowercase: true, unique: true},
-        fpUuid: {type: String, required: true, lowercase: true},
-        fpTemplate: {type: String, required: true},
-        registeredDate: {type: Date, required: true},
-        status: {type: String, required: true},
-        location: {type: String, required: true},
-        personCode: {type: String},
-        position: {type: String},
-        masterfp: {type: Boolean}
+        uuid: { type: String, required: true, lowercase: true, unique: true },
+        fpUuid: { type: String, required: true, lowercase: true },
+        fpTemplate: { type: String, required: true },
+        registeredDate: { type: Date, required: true },
+        status: { type: String, required: true },
+        location: { type: String, required: true },
+        personCode: { type: String },
+        position: { type: String },
+        masterfp: { type: Boolean }
     });
-    
+
     private eventSchema = new mongoose.Schema({
-        uuid: {type: String, required: true, lowercase: true, unique: true},
-        fpUuid: {type: String, lowercase: true},
-        registeredDate: {type: Date, required: true},
-        message: {type: String, required: true},
-        messageType: {type: String, required: true},
-        messageData: {type: String},
-        deviceNo: {type: String, required: true}
+        uuid: { type: String, required: true, lowercase: true, unique: true },
+        fpUuid: { type: String, lowercase: true },
+        registeredDate: { type: Date, required: true },
+        message: { type: String, required: true },
+        messageType: { type: String, required: true },
+        messageData: { type: String },
+        deviceNo: { type: String, required: true }
     });
 
     private locationTagSchema = new mongoose.Schema({
-        uuid: {type: String, required: true, lowercase: true, unique: true},
-        fpUuid: {type: String, required: true, lowercase: true},
-        location: {type: String, required: true}
+        uuid: { type: String, required: true, lowercase: true, unique: true },
+        fpUuid: { type: String, required: true, lowercase: true },
+        location: { type: String, required: true }
     });
 
     private locationRelationSchema = new mongoose.Schema({
-        uuid: {type: String, required: true, lowercase: true, unique: true},
-        child: {type: String, required: true},
-        parent: {type: String, required: true}
-    });
-   
-    public genericFileDataSchema = new mongoose.Schema({
-        uuid: String,
-        filename: String,
-        filetype: String,
-        filesize: String,
-        lastModified: String,
-        filedata: String,
+        uuid: { type: String, required: true, lowercase: true, unique: true },
+        child: { type: String, required: true },
+        parent: { type: String, required: true }
     });
 
     private deviceTagSchema = new mongoose.Schema({
-        uuid: {type: String, required: true, lowercase: true, unique: true},
-        deviceNo: {type: String, required: true},
-        location: {type: String, required: true}
+        uuid: { type: String, required: true, lowercase: true, unique: true },
+        deviceNo: { type: String, required: true },
+        location: { type: String, required: true }
     });
 
     private personProfileSchema = new mongoose.Schema({
-        uuid: {type: String, required: true, lowercase: true, unique: true},
-        personCode: {type: String, required: true},
-        personName: {type: String, required: true}
+        uuid: { type: String, required: true, lowercase: true, unique: true },
+        personCode: { type: String, required: true },
+        personName: { type: String, required: true }
     });
 
-    constructor(){}
+    public fileDataSchema = new mongoose.Schema({
+        fingerprintTemplateData: [this.fpTemplateSchema],
+        eventMessage: [this.eventSchema],
+        locationTag: [this.locationTagSchema],
+        locationRelation: [this.locationRelationSchema],
+        deviceTag: [this.deviceTagSchema],
+        personalFile: [this.personProfileSchema],
+    });
+
+    public genericDataSchema = new mongoose.Schema({
+        uuid: { type: String, required: true, lowercase: true, unique: true },
+        fileName: { type: String, required: true, lowercase: true },
+        fileType: { type: String, required: true, lowercase: true },
+        fileData: { type: this.fileDataSchema, required: true },
+    });
+
+    constructor() { }
 
     /**
      * @description connect to mongodb 
@@ -85,14 +92,14 @@ export class DbConnectionController {
         })
         this.dbConnection.on("reconnected", () => {
             handleMessage(RESPONSE_MESSAGE.DATABASE_RECONNECTED);
-        }) 
+        })
     }
 
     /**
      * @description return model based on entityName 
      */
     private returnModelType(entityName: string) {
-        switch(entityName) {
+        switch (entityName) {
             case FPENTITYNAME.FP_TEMPLATE_MSG:
                 return mongoose.model(entityName, this.fpTemplateSchema);
             case FPENTITYNAME.EVENT_MSG:
@@ -101,8 +108,8 @@ export class DbConnectionController {
                 return mongoose.model(entityName, this.locationTagSchema);
             case FPENTITYNAME.LOCATION_REL_MSG:
                 return mongoose.model(entityName, this.locationRelationSchema);
-            case FPENTITYNAME.GENERICFILEDATA:
-                return mongoose.model(entityName, this.genericFileDataSchema);
+            case FPENTITYNAME.GENERICDATA:
+                return mongoose.model(entityName, this.genericDataSchema);
             case FPENTITYNAME.DEVICE_TAG_MSG:
                 return mongoose.model(entityName, this.deviceTagSchema);
             case FPENTITYNAME.PERSON_PROF_MSG:
@@ -110,7 +117,7 @@ export class DbConnectionController {
         }
     }
 
-    
+
 
     /**
      * @param entityName type : string
@@ -119,13 +126,13 @@ export class DbConnectionController {
      */
     public async readExec(entityName: string, entityUUID?: string) {
         let findData = {};
-        if(entityUUID) {findData = {uuid: entityUUID}};
+        if (entityUUID) { findData = { uuid: entityUUID } };
         const collection = this.returnModelType(entityName);
         let data: string;
         try {
             data = JSON.stringify(await collection.find(findData));
             handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_READ_DATA);
-        }catch(err) {
+        } catch (err) {
             data = JSON.stringify(err);
             handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_READ_DATA, err);
         }
@@ -156,9 +163,9 @@ export class DbConnectionController {
         // console.log('excludedata is ',excludeData)
         // console.log('data is ',data)
         const mongoModel = this.returnModelType(entityNames);
-        await mongoModel.updateOne({uuid: data.uuid}, data).then((res) => {
-            if(res.modifiedCount === 0) {
-                handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_UPDATE_DATA, {response: {data: "modifiedCount is 0."}});
+        await mongoModel.updateOne({ uuid: data.uuid }, data).then((res) => {
+            if (res.modifiedCount === 0) {
+                handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_UPDATE_DATA, { response: { data: "modifiedCount is 0." } });
             }
             else {
                 handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_UPDATE_DATA);
@@ -175,13 +182,13 @@ export class DbConnectionController {
      */
     public async deleteExec(entityName: string, entityUUID: string) {
         const mongoModel = this.returnModelType(entityName);
-        await mongoModel.deleteOne({uuid: entityUUID}).then((res) => {
-           if(res.deletedCount === 0) {
-            handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_DELETE_DATA, {response: {data: "deletedCount is 0."}});
-           }
-           else{
-            handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_DELETE_DATA);
-           }
+        await mongoModel.deleteOne({ uuid: entityUUID }).then((res) => {
+            if (res.deletedCount === 0) {
+                handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_DELETE_DATA, { response: { data: "deletedCount is 0." } });
+            }
+            else {
+                handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_DELETE_DATA);
+            }
         }).catch((err) => {
             handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_DELETE_DATA, err);
         })

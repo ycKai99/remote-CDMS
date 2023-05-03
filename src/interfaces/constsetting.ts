@@ -8,15 +8,15 @@ export const LOCATION_TAG_FILE: string = "locationtag.json";
 export const LOCATION_RELATION_FILE: string = "locationrelation.json";
 
 // file full path
-export const MESSAGE_FILE_PATH: string = "./"+DIRECTORY+"/"+MESSAGE_NOTIFICATION_FILE;
-export const FINGERPRINT_FILE_PATH: string = "./"+DIRECTORY+"/"+FINGERPRINT_DATA_FILE;
-export const FINGERPRINT_TEMPLATE_FILE_PATH: string ="./"+DIRECTORY+"/"+FINGERPRINT_TEMPLATE_DATA_FILE;
-export const RESPONSE_MESSAGE_FILE_PATH: string = "./"+DIRECTORY+"/"+RESPONSE_MESSAGE_FILE;
-export const LOCATION_TAG_FILE_PATH: string = "./"+DIRECTORY+"/"+LOCATION_TAG_FILE;
-export const LOCATION_RELATION_FILE_PATH: string = "./"+DIRECTORY+"/"+LOCATION_RELATION_FILE;
+export const MESSAGE_FILE_PATH: string = "./" + DIRECTORY + "/" + MESSAGE_NOTIFICATION_FILE;
+export const FINGERPRINT_FILE_PATH: string = "./" + DIRECTORY + "/" + FINGERPRINT_DATA_FILE;
+export const FINGERPRINT_TEMPLATE_FILE_PATH: string = "./" + DIRECTORY + "/" + FINGERPRINT_TEMPLATE_DATA_FILE;
+export const RESPONSE_MESSAGE_FILE_PATH: string = "./" + DIRECTORY + "/" + RESPONSE_MESSAGE_FILE;
+export const LOCATION_TAG_FILE_PATH: string = "./" + DIRECTORY + "/" + LOCATION_TAG_FILE;
+export const LOCATION_RELATION_FILE_PATH: string = "./" + DIRECTORY + "/" + LOCATION_RELATION_FILE;
 
 // submit button value 
-export const enum SUBMIT_VALUE{
+export const enum SUBMIT_VALUE {
     INITIALIZE_DEVICE = 'INITIALIZE_DEVICE',
     ENROLL_FINGERPRINT = 'ENROLL_FINGERPRINT',
     VERIFY_FINGERPRINT = 'VERIFY_FINGERPRINT',
@@ -25,7 +25,7 @@ export const enum SUBMIT_VALUE{
 }
 
 // file extension
-export const enum FILE_EXTENSION{
+export const enum FILE_EXTENSION {
     JPEG = 'jpeg',
     BITMAP = 'bmp',
     PNG = 'png',
@@ -71,13 +71,13 @@ export const enum RESPONSE_MESSAGE {
 }
 
 export const REMOTE_SERVER: string = process.env.REMOTE_SERVER;
-export const URL_GET_FP_TEMPLATE: string = REMOTE_SERVER+"fptemplate";
-export const URL_REGISTER_FP: string = REMOTE_SERVER+"registerfp";
-export const URL_GET_NEW_FPID: string = REMOTE_SERVER+"getNewFPId";
-export const URL_SYNC_REMOTE_DATA: string = REMOTE_SERVER+"syncRemoteData";
+export const URL_GET_FP_TEMPLATE: string = REMOTE_SERVER + "fptemplate";
+export const URL_REGISTER_FP: string = REMOTE_SERVER + "registerfp";
+export const URL_GET_NEW_FPID: string = REMOTE_SERVER + "getNewFPId";
+export const URL_SYNC_REMOTE_DATA: string = REMOTE_SERVER + "syncRemoteData";
 export const URL_MOBILE_DEVICE: string = "http://192.168.100.54:8080";
 
-export const enum FINGERPRINT_POSITION{
+export const enum FINGERPRINT_POSITION {
     LEFT_THUMB,
     LEFT_INDEX,
     LEFT_MIDDLE,
@@ -113,7 +113,7 @@ export enum FPENTITYNAME {
     EVENT_MSG = "eventMessage",
     LOCATION_TAG_MSG = "locationTag",
     LOCATION_REL_MSG = "locationRelation",
-    GENERICFILEDATA = "genericFileData",
+    GENERICDATA = "genericData",
     DEVICE_TAG_MSG = "deviceTag",
     PERSON_PROF_MSG = "personProfile"
 
