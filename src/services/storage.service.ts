@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common'; 
+import { Injectable } from '@nestjs/common';
 import { readExec } from './utility/readdata';
 import { writeExec } from './utility/writedata';
-import { DB, RESPONSE_MESSAGE } from '../interfaces/constsetting'; 
+import { DB, RESPONSE_MESSAGE } from '../interfaces/constsetting';
 import { DbConnectionController } from './database.service';
 import * as dotenv from 'dotenv'
 import { SynchronisationService } from './synchronisation.service';
@@ -10,13 +10,13 @@ import { handleMessage } from './utility/handlestatusmessage';
 dotenv.config();
 
 @Injectable()
-export class StorageController{
+export class StorageController {
 
-    private entityName_storageType :{[key: string]: DB} = {};
+    private entityName_storageType: { [key: string]: DB } = {};
     private dbConnectionController: DbConnectionController = new DbConnectionController();
     private synchronisationService: SynchronisationService = new SynchronisationService();
 
-    constructor(){
+    constructor() {
         console.log('storage running...')
     }
 
@@ -29,23 +29,21 @@ export class StorageController{
             //fingerprintTemplateData=mongo
             (keyvalue: string) => {
                 let keyvalueArray: string[];
-                keyvalueArray = keyvalue.split("="); 
+                keyvalueArray = keyvalue.split("=");
                 const key: string = keyvalueArray[0];
                 const value: string = keyvalueArray[1];
                 let DBvalue: DB;
 
-                if(value.toLocaleLowerCase() === 'file')
-                {
+                if (value.toLocaleLowerCase() === 'file') {
                     DBvalue = DB.FILE;
                 }
-                if(value.toLocaleLowerCase() === 'mongo')
-                {
+                if (value.toLocaleLowerCase() === 'mongo') {
                     DBvalue = DB.MONGO;
-                } 
+                }
 
                 this.setStorageType(key, DBvalue);
             }
-        )  
+        )
 
         // Connect to mongo DB.
         await this.dbConnectionController.init();
@@ -55,7 +53,7 @@ export class StorageController{
     }
 
     // get storage type
-    public getStorageType(entityName: string): DB{
+    public getStorageType(entityName: string): DB {
         return this.entityName_storageType[entityName];
     }
 
@@ -85,15 +83,15 @@ export class StorageController{
      * @description write data
      */
     public async writeData(entityName: string, entityUUID: string, data: string) {
-        
+
         // auto=append UUID
         const JSONdata = JSON.parse(data);
         JSONdata["uuid"] = entityUUID;
-
         if (this.getStorageType(entityName) === DB.FILE) {
             writeExec(entityName, data);
         }
         if (this.getStorageType(entityName) === DB.MONGO) {
+
             await this.dbConnectionController.writeExec(entityName, JSONdata);
         }
     }
@@ -104,17 +102,17 @@ export class StorageController{
      * @param data type : string
      * @description update data
      */
-    public async updateData(entityName: string, entityUUID:string, data: string) {
+    public async updateData(entityName: string, entityUUID: string, data: string) {
 
         const JSONdata = JSON.parse(data);
         JSONdata["uuid"] = entityUUID;
 
         if (this.getStorageType(entityName) === DB.FILE) {
-        //   return updateExec(entityName, data);
+            //   return updateExec(entityName, data);
             console.log("Not yet implemented file storage.");
         }
         if (this.getStorageType(entityName) === DB.MONGO) {
-          return await this.dbConnectionController.updateExec(entityName, JSONdata);
+            return await this.dbConnectionController.updateExec(entityName, JSONdata);
         }
     }
 
@@ -126,13 +124,13 @@ export class StorageController{
     public async deleteData(entityName: string, entityUUID: string) {
 
         if (this.getStorageType(entityName) === DB.FILE) {
-        //   return deleteExec(entityName, data);
+            //   return deleteExec(entityName, data);
             console.log("Not yet implemented file storage.");
         }
         if (this.getStorageType(entityName) === DB.MONGO) {
-            console.log('entityName : ',entityName)
-            console.log('entityUUID : ',entityUUID)
-          return await this.dbConnectionController.deleteExec(entityName, entityUUID);
+            console.log('entityName : ', entityName)
+            console.log('entityUUID : ', entityUUID)
+            return await this.dbConnectionController.deleteExec(entityName, entityUUID);
         }
     }
 }
