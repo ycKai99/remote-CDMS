@@ -86,13 +86,13 @@ export class StorageController {
 
         // auto=append UUID
         const JSONdata = JSON.parse(data);
-        JSONdata["uuid"] = entityUUID;
+        // JSONdata["fileData.uuid"] = entityUUID;
+
         if (this.getStorageType(entityName) === DB.FILE) {
             writeExec(entityName, data);
         }
         if (this.getStorageType(entityName) === DB.MONGO) {
-
-            await this.dbConnectionController.writeExec(entityName, JSONdata);
+            await this.dbConnectionController.writeExec(entityName, JSONdata, entityUUID);
         }
     }
 
@@ -105,14 +105,14 @@ export class StorageController {
     public async updateData(entityName: string, entityUUID: string, data: string) {
 
         const JSONdata = JSON.parse(data);
-        JSONdata["uuid"] = entityUUID;
+        // JSONdata["uuid"] = entityUUID;
 
         if (this.getStorageType(entityName) === DB.FILE) {
             //   return updateExec(entityName, data);
             console.log("Not yet implemented file storage.");
         }
         if (this.getStorageType(entityName) === DB.MONGO) {
-            return await this.dbConnectionController.updateExec(entityName, JSONdata);
+            return await this.dbConnectionController.updateExec(entityName, JSONdata, entityUUID);
         }
     }
 

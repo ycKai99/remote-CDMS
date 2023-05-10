@@ -2,66 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { handleMessage } from './utility/handlestatusmessage';
 import { FPENTITYNAME, RESPONSE_MESSAGE } from '../interfaces/constsetting';
 const mongoose = require('mongoose');
-import { Document, Schema, model } from 'mongoose';
+import { Schema, model } from 'mongoose';
 const { v4: uuidv4 } = require('uuid');
-import { FileSchema } from '../interfaces/genericData.interface';
+import { FileSchema, deviceTagSchema, eventMessageSchema, fpTemplateSchema, locationRelationSchema, locationTagSchema, personProfileSchema } from '../interfaces/genericData.interface';
+
+
 @Injectable()
 export class DbConnectionController {
 
     private dbConnection;
 
-    // private fpTemplateSchema = new mongoose.Schema({
-    //     uuid: { type: String, required: true, lowercase: true, unique: true },
-    //     fpUuid: { type: String, required: true, lowercase: true },
-    //     fpTemplate: { type: String, required: true },
-    //     registeredDate: { type: Date, required: true },
-    //     status: { type: String, required: true },
-    //     location: { type: String, required: true },
-    //     personCode: { type: String },
-    //     position: { type: String },
-    //     masterfp: { type: Boolean }
-    // });
-
-    // private eventSchema = new mongoose.Schema({
-    //     uuid: { type: String, required: true, lowercase: true, unique: true },
-    //     fpUuid: { type: String, lowercase: true },
-    //     registeredDate: { type: Date, required: true },
-    //     message: { type: String, required: true },
-    //     messageType: { type: String, required: true },
-    //     messageData: { type: String },
-    //     deviceNo: { type: String, required: true }
-    // });
-
-    // private locationTagSchema = new mongoose.Schema({
-    //     uuid: { type: String, required: true, lowercase: true, unique: true },
-    //     fpUuid: { type: String, required: true, lowercase: true },
-    //     location: { type: String, required: true }
-    // });
-
-    // private locationRelationSchema = new mongoose.Schema({
-    //     uuid: { type: String, required: true, lowercase: true, unique: true },
-    //     child: { type: String, required: true },
-    //     parent: { type: String, required: true }
-    // });
-
-    // private deviceTagSchema = new mongoose.Schema({
-    //     uuid: { type: String, required: true, lowercase: true, unique: true },
-    //     deviceNo: { type: String, required: true },
-    //     location: { type: String, required: true }
-    // });
-
-    // private personProfileSchema = new mongoose.Schema({
-    //     uuid: { type: String, required: true, lowercase: true, unique: true },
-    //     personCode: { type: String, required: true },
-    //     personName: { type: String, required: true }
-    // });
-
-
-
     public genericDataSchema = new Schema<FileSchema>({
         uuid: { type: String, required: true, lowercase: true, unique: true },
         fileName: { type: String, required: true, lowercase: true },
         fileType: { type: String, required: true, lowercase: true },
+        entityName: { type: String, required: true, lowercase: true },
         fileData: { type: Object, required: true },
     });
 
@@ -71,7 +26,7 @@ export class DbConnectionController {
      * @description connect to mongodb 
      */
     public async init() {
-        mongoose.connect("mongodb://127.0.0.1:27017/fingerprint", {
+        mongoose.connect(process.env.MONGODB_SERVER, {
             useNewUrlParser: "true",
             useUnifiedTopology: true
         });
@@ -91,38 +46,13 @@ export class DbConnectionController {
     }
 
     /**
-     * @description return model based on entityName 
-     */
-    private returnModelType(entityName: string) {
-        switch (entityName) {
-            // case FPENTITYNAME.FP_TEMPLATE_MSG:
-            //     return mongoose.model(entityName, this.fpTemplateSchema);
-            // case FPENTITYNAME.EVENT_MSG:
-            //     return mongoose.model(entityName, this.eventSchema);
-            // case FPENTITYNAME.LOCATION_TAG_MSG:
-            //     return mongoose.model(entityName, this.locationTagSchema);
-            // case FPENTITYNAME.LOCATION_REL_MSG:
-            //     return mongoose.model(entityName, this.locationRelationSchema);
-            // case FPENTITYNAME.GENERICDATA:
-            //     return mongoose.model(entityName, this.genericDataSchema);
-            // case FPENTITYNAME.DEVICE_TAG_MSG:
-            //     return mongoose.model(entityName, this.deviceTagSchema);
-            // case FPENTITYNAME.PERSON_PROF_MSG:
-            //     return mongoose.model(entityName, this.personProfileSchema);
-        }
-    }
-
-
-
-    /**
      * @param entityName type : string
      * @param entityUUID type : string (optional, used when read single data)
      * @description read data from mongodb 
      */
     public async readExec(entityName: string, entityUUID?: string) {
         let findData = {};
-        if (entityUUID) { findData = { 'uuid': entityUUID, 'fileName': entityName } };
-        // const collection = this.returnModelType(entityName);
+        if (entityUUID) { findData = { 'entityName': entityName, 'fileData.uuid': entityUUID } };
         const mongodbData = model<FileSchema>('GenericData', this.genericDataSchema);
         let data: string;
         try {
@@ -140,20 +70,23 @@ export class DbConnectionController {
      * @param data data
      * @description add data into mongodb 
      */
-    public async writeExec(entityName: string, data) {
-        // const mongoModel = this.returnModelType(entityName);
+    public async writeExec(entityName: string, data, entityUUID?: string) {
+        let msg: any = "";
         const mongodbData = model<FileSchema>('GenericData', this.genericDataSchema);
-        let writeData: FileSchema = {
-            uuid: uuidv4(),
-            fileName: entityName,
-            fileType: 'JSON',
-            fileData: data
+        let returnData: any = this.checkEntityType(entityName, data);
+        if (typeof returnData === "string") {
+            msg = returnData;
         }
-        await mongodbData.create(writeData).then((res) => {
-            handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_SAVE_DATA);
-        }).catch((err) => {
-            handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_SAVE_DATA, err);
-        })
+        else {
+            await mongodbData.create(returnData).then((res) => {
+                handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_SAVE_DATA);
+                msg = this.getSuccessMessage();
+            }).catch((err) => {
+                handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_SAVE_DATA, err);
+                msg = err.message;
+            });
+        }
+        return msg;
     }
 
     /**
@@ -161,28 +94,30 @@ export class DbConnectionController {
      * @param data data
      * @description update data to mongodb 
      */
-    public async updateExec(entityNames: string, data) {
-        // const {uuid,entityName, ...excludeData} = data
-        // console.log('excludedata is ',excludeData)
-        // console.log('data is ',data)
-        // const mongoModel = this.returnModelType(entityNames);
-        let updateData: FileSchema = {
-            uuid: data.uuid,
-            fileName: entityNames,
-            fileType: 'JSON',
-            fileData: data
+    public async updateExec(entityNames: string, data, entityUUID?: string) {
+        let msg: any = "";
+        let returnData: any = this.checkEntityType(entityNames, data);
+        if (typeof returnData === "string") {
+            msg = returnData;
         }
-        const mongodbData = model<FileSchema>('GenericData', this.genericDataSchema);
-        await mongodbData.updateOne({ uuid: data.uuid }, updateData).then((res) => {
-            if (res.modifiedCount === 0) {
-                handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_UPDATE_DATA, { response: { data: "modifiedCount is 0." } });
-            }
-            else {
-                handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_UPDATE_DATA);
-            }
-        }).catch((err) => {
-            handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_UPDATE_DATA, err)
-        })
+        else {
+            const mongodbData = model<FileSchema>('GenericData', this.genericDataSchema);
+            await mongodbData.updateOne({ 'fileData.uuid': entityUUID }, returnData).then((res) => {
+                if (res.modifiedCount === 0) {
+                    handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_UPDATE_DATA, { response: { data: "modifiedCount is 0." } });
+                    msg = "modifiedCount is 0";
+                }
+                else {
+                    handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_UPDATE_DATA);
+                    msg = this.getSuccessMessage();
+                }
+            }).catch((err) => {
+                handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_UPDATE_DATA, err)
+                msg = err.message;
+            })
+        }
+
+        return msg;
     }
 
     /**
@@ -191,17 +126,64 @@ export class DbConnectionController {
      * @description delete data from mongodb 
      */
     public async deleteExec(entityName: string, entityUUID: string) {
-        // const mongoModel = this.returnModelType(entityName);
+        let msg: any;
         const mongodbData = model<FileSchema>('GenericData', this.genericDataSchema);
         await mongodbData.deleteOne({ uuid: entityUUID }).then((res) => {
             if (res.deletedCount === 0) {
                 handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_DELETE_DATA, { response: { data: "deletedCount is 0." } });
+                msg = RESPONSE_MESSAGE.DATABASE_FAILED_DELETE_DATA;
             }
             else {
                 handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_DELETE_DATA);
+                msg = this.getSuccessMessage();
             }
         }).catch((err) => {
             handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_DELETE_DATA, err);
+            msg = err.message;
         })
+        return msg;
     }//fingerprintTemplateData, handleResponseMessage, locationtag, locationrelation
+
+
+    checkEntityType(entityName: string, data: any) {
+        let error_message: string = "";
+        try {
+            if (data === null) {
+                error_message = "Data is null";
+                handleMessage(RESPONSE_MESSAGE.FAILED_VERIFY, error_message);
+                return error_message;
+            }
+            if (entityName === FPENTITYNAME.FP_TEMPLATE_MSG) {
+                data as fpTemplateSchema;
+            }
+            if (entityName === FPENTITYNAME.EVENT_MSG) {
+                data as eventMessageSchema;
+            }
+            if (entityName === FPENTITYNAME.LOCATION_TAG_MSG) {
+                data as locationTagSchema;
+            }
+            if (entityName === FPENTITYNAME.LOCATION_REL_MSG) {
+                data as locationRelationSchema;
+            }
+            if (entityName === FPENTITYNAME.DEVICE_TAG_MSG) {
+                data as deviceTagSchema;
+            }
+            if (entityName === FPENTITYNAME.PERSON_PROF_MSG) {
+                data as personProfileSchema;
+            }
+            return data;
+        }
+        catch (err) {
+            error_message = "[Type error] " + err.message;
+            handleMessage(RESPONSE_MESSAGE.FAILED_VERIFY, error_message);
+            return error_message;
+        }
+    }
+
+    getSuccessMessage() {
+        return {
+            status: 1,
+            message: "Success",
+        }
+    }
 }

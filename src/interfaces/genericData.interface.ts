@@ -1,6 +1,6 @@
 
 export interface fpTemplateSchema {
-    uuid: { type: String, required: true, lowercase: true, unique: true },
+    uuid: string;
     fpUuid: string;
     fpTemplate: string;
     registeredDate: Date;
@@ -10,7 +10,7 @@ export interface fpTemplateSchema {
     position: string;
     masterfp?: boolean;
 };
-export interface eventSchema {
+export interface eventMessageSchema {
     uuid: string;
     fpUuid: string;
     registeredDate: Date;
@@ -43,5 +43,6 @@ export interface FileSchema {
     uuid: string;
     fileName: string;
     fileType: string;
-    fileData: fpTemplateSchema | eventSchema | locationTagSchema | locationRelationSchema | deviceTagSchema | personProfileSchema;
+    entityName: string;
+    fileData: fpTemplateSchema | eventMessageSchema | locationTagSchema | locationRelationSchema | deviceTagSchema | personProfileSchema;
 }
