@@ -83,7 +83,6 @@ export class StorageController {
      * @description write data
      */
     public async writeData(entityName: string, entityUUID: string, data: string) {
-
         // auto=append UUID
         const JSONdata = JSON.parse(data);
         // JSONdata["fileData.uuid"] = entityUUID;
@@ -103,7 +102,6 @@ export class StorageController {
      * @description update data
      */
     public async updateData(entityName: string, entityUUID: string, data: string) {
-
         const JSONdata = JSON.parse(data);
         // JSONdata["uuid"] = entityUUID;
 

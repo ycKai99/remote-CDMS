@@ -39,7 +39,7 @@ export class AppService {
   }
 
 
-  //
+  // send data to CDMS
   async syncOperation(data) {
     let entityName: string = data.entityName;
     let payloadData: string[] = data.data;
@@ -84,6 +84,8 @@ export class AppService {
   async syncDataOperation(body) {
     let entityName = body.payloadEntityName;
     let entityData = body.data;
+    console.log('entityData: ', entityName)
+
     entityData.forEach((x) => {
       if (x == null) {
         console.log('Error: Data is null');
@@ -104,7 +106,7 @@ export class AppService {
   }
 }
 
-export function filterLocalUUIDArray(data): string[] {
+function filterLocalUUIDArray(data): string[] {
   let arr: string[] = [];
   // data.forEach(element => { arr.push(element['uuid']); });
   data.forEach((item) => {

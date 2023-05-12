@@ -74,6 +74,7 @@ export class DbConnectionController {
         let msg: any = "";
         const mongodbData = model<FileSchema>('GenericData', this.genericDataSchema);
         let returnData: any = this.checkEntityType(entityName, data);
+        console.log('return data: ', returnData);
         if (typeof returnData === "string") {
             msg = returnData;
         }
@@ -169,7 +170,7 @@ export class DbConnectionController {
                 data as deviceTagSchema;
             }
             if (entityName === FPENTITYNAME.PERSON_PROF_MSG) {
-                data as personProfileSchema;
+                data as any;
             }
             return data;
         }
