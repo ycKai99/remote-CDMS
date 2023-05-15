@@ -52,15 +52,25 @@ export class DbConnectionController {
      */
     public async readExec(entityName: string, entityUUID?: string) {
         let findData = {};
-        if (entityUUID) { findData = { 'entityName': entityName, 'fileData.uuid': entityUUID } };
+        if (entityName) {
+            findData = { 'entityName': entityName }
+        }
+        if (entityUUID) {
+            if (entityName === 'personProfile') {
+                findData = { 'uuid': entityUUID, 'entityName': entityName.toLowerCase() }
+            }
+            else {
+                findData = { 'entityName': entityName, 'fileData.uuid': entityUUID }
+            }
+        }
         const mongodbData = model<FileSchema>('GenericData', this.genericDataSchema);
         let data: string;
         try {
             data = JSON.stringify(await mongodbData.find(findData));
-            handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_READ_DATA);
+            // handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_READ_DATA);
         } catch (err) {
             data = JSON.stringify(err);
-            handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_READ_DATA, err);
+            // handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_READ_DATA, err);
         }
         return data;
     }
@@ -73,17 +83,17 @@ export class DbConnectionController {
     public async writeExec(entityName: string, data, entityUUID?: string) {
         let msg: any = "";
         const mongodbData = model<FileSchema>('GenericData', this.genericDataSchema);
+
         let returnData: any = this.checkEntityType(entityName, data);
-        console.log('return data: ', returnData);
         if (typeof returnData === "string") {
             msg = returnData;
         }
         else {
             await mongodbData.create(returnData).then((res) => {
-                handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_SAVE_DATA);
+                // handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_SAVE_DATA);
                 msg = this.getSuccessMessage();
             }).catch((err) => {
-                handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_SAVE_DATA, err);
+                // handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_SAVE_DATA, err);
                 msg = err.message;
             });
         }
@@ -170,6 +180,7 @@ export class DbConnectionController {
                 data as deviceTagSchema;
             }
             if (entityName === FPENTITYNAME.PERSON_PROF_MSG) {
+                // data as personProfileSchema;
                 data as any;
             }
             return data;

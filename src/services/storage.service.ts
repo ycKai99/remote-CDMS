@@ -84,15 +84,18 @@ export class StorageController {
      */
     public async writeData(entityName: string, entityUUID: string, data: string) {
         // auto=append UUID
+
         const JSONdata = JSON.parse(data);
         // JSONdata["fileData.uuid"] = entityUUID;
 
-        if (this.getStorageType(entityName) === DB.FILE) {
-            writeExec(entityName, data);
-        }
-        if (this.getStorageType(entityName) === DB.MONGO) {
-            await this.dbConnectionController.writeExec(entityName, JSONdata, entityUUID);
-        }
+        // if (this.getStorageType(entityName) === DB.FILE) {
+        //     console.log('reach here:  file');
+        //     // writeExec(entityName, data);
+        // }
+        // if (this.getStorageType(entityName) === DB.MONGO) {
+
+        await this.dbConnectionController.writeExec(entityName, JSONdata, entityUUID);
+        // }
     }
 
     /**
