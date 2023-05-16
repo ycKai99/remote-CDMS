@@ -35,7 +35,7 @@ export interface deviceTagSchema {
     location: string;
 };
 export interface personProfileSchema {
-    uuid: string;
+    pers_id?: number;
     pers_name: string;
     pers_new_ic: string;
     pers_sex: string;

@@ -89,11 +89,19 @@ export class DbConnectionController {
             msg = returnData;
         }
         else {
-            await mongodbData.create(returnData).then((res) => {
+            console.log('data: ', returnData);
+            // let writeData: FileSchema = {
+            //     uuid: uuidv4(),
+            //     fileName: entityName + entityUUID,
+            //     fileType: 'JSON',
+            //     entityName: entityName,
+            //     fileData: returnData
+            // }
+            await mongodbData.create(returnData[0]).then((res) => {
                 // handleMessage(RESPONSE_MESSAGE.DATABASE_SUCCESS_SAVE_DATA);
                 msg = this.getSuccessMessage();
             }).catch((err) => {
-                // handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_SAVE_DATA, err);
+                handleMessage(RESPONSE_MESSAGE.DATABASE_FAILED_SAVE_DATA, err);
                 msg = err.message;
             });
         }
@@ -180,8 +188,8 @@ export class DbConnectionController {
                 data as deviceTagSchema;
             }
             if (entityName === FPENTITYNAME.PERSON_PROF_MSG) {
-                // data as personProfileSchema;
-                data as any;
+                data as personProfileSchema;
+                // data as any;
             }
             return data;
         }

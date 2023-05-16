@@ -25,6 +25,7 @@ export class AppService {
     }
 
     if (data.operation === "write") {
+      console.log('entityName: ', data)
       returnData = await this.storageController.writeData(data.entityName, data.uuid, data.data)
     }
 
@@ -47,7 +48,7 @@ export class AppService {
     let requestDataFromCDMS = [];
     // read data from server
     let localData = JSON.parse(await this.storageController.readData(entityName));
-    localData = localData.map(({ _id, __v, ...others }) => others);
+    // localData = localData.map(({ _id, __v, ...others }) => others);
     // console.log('localData: ', localData);// no id and v
     // filter uuid from data
     let filterUUIDArray: string[] = filterLocalUUIDArray(localData);
@@ -66,7 +67,7 @@ export class AppService {
     if (requestUUIDFromCDMS.length > 0) {
       requestDataFromCDMS = await Promise.all(requestUUIDFromCDMS.map(async (x) => {
         let data = JSON.parse(await this.storageController.readData(entityName, x));
-        console.log('data: ', data);// no id and v
+        // console.log('data: ', data);// no id and v
         return data[0];
       }))
     }
@@ -93,18 +94,19 @@ export class AppService {
         console.log('Error: Data is null');
       }
       else {
-        // let excludeData = ['_id', '__v']
-        // let filteredObj = Object.keys(x)
-        //   .filter((key) => {
-        //     return !excludeData.includes(key)
-        //   })
-        //   .reduce((result, current) => {
-        //     result[current] = x[current];
-        //     console.log('current: ', current)
-        //     return result
-        //   }, {})
-        x = x.map(({ _id, __v, ...others }) => others);
-        this.storageController.writeData(x.entityName, x.uuid, JSON.stringify(x[0]))
+        let excludeData = ['_id', '__v']
+        let filteredObj = Object.keys(x)
+          .filter((key) => {
+            return !excludeData.includes(key)
+          })
+          .reduce((result, current) => {
+            result[current] = x[current];
+            console.log('current: ', current)
+            return result
+          }, {})
+        // x = x.map(({ _id, __v, ...others }) => others);
+        // this.storageController.writeData(JSON.stringify(x['0'].entityName), JSON.stringify(x['0'].uuid), JSON.stringify(x[0]))
+        this.storageController.writeData(entityName, x.uuid, JSON.stringify(filteredObj))
       }
     });
   }

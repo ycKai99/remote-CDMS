@@ -28,6 +28,7 @@ export class StorageController {
         storageArray.forEach(
             //fingerprintTemplateData=mongo
             (keyvalue: string) => {
+
                 let keyvalueArray: string[];
                 keyvalueArray = keyvalue.split("=");
                 const key: string = keyvalueArray[0];
@@ -84,18 +85,17 @@ export class StorageController {
      */
     public async writeData(entityName: string, entityUUID: string, data: string) {
         // auto=append UUID
-
+        console.log('entityName: ', entityName);
         const JSONdata = JSON.parse(data);
-        // JSONdata["fileData.uuid"] = entityUUID;
 
-        // if (this.getStorageType(entityName) === DB.FILE) {
-        //     console.log('reach here:  file');
-        //     // writeExec(entityName, data);
-        // }
-        // if (this.getStorageType(entityName) === DB.MONGO) {
-
-        await this.dbConnectionController.writeExec(entityName, JSONdata, entityUUID);
-        // }
+        if (this.getStorageType(entityName) === DB.FILE) {
+            console.log("Not yet implemented file storage.");
+            writeExec(entityName, data);
+        }
+        if (this.getStorageType(entityName) === DB.MONGO) {
+            console.log('get storage type: ', this.getStorageType(entityName));
+            await this.dbConnectionController.writeExec(entityName, JSONdata, entityUUID);
+        }
     }
 
     /**
